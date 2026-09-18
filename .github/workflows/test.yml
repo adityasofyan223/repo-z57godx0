@@ -51,4 +51,4 @@ jobs:
       - run: echo "CHROME_PATH=/usr/bin/google-chrome" >> $GITHUB_ENV
       - run: echo "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome" >> $GITHUB_ENV
       - run: chmod +x test.js
-      - run: node test.js "${{ inputs.mdata }}" "${{ inputs.url }}" "${{ inputs.time }}" "${{ inputs.threads }}" "${{ inputs.rate }}" "${{ inputs.cookiecount }}" --query 1 --debug true --bfm true --http mix --full true
+      - run: node test.js "${{ inputs.mdata }}" "${{ inputs.url }}" "${{ inputs.time }}" "${{ inputs.threads }}" "${{ inputs.rate }}" "${{ inputs.cookiecount }}" --query 1 --debug true
