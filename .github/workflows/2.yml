@@ -28,6 +28,9 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NODE_OPTIONS: "--max-old-space-size=12288"
     strategy:
       fail-fast: false
       matrix:
